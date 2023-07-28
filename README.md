@@ -37,7 +37,8 @@ As ansible user to create a virtual environment :
 As ansible user to install ansible packages :
 
 	pip install ansible ansible-core ansible-lint
-	add source "$HOME"/venv/bin/activate in .profile
+
+add source "$HOME"/venv/bin/activate in .profile
  
 If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
 
