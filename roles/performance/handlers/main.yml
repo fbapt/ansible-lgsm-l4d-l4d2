@@ -1,0 +1,5 @@
+---
+- name: Update-grub
+  ansible.builtin.command: update-grub
+  register: checkupdate
+  changed_when: checkupdate.rc != 0

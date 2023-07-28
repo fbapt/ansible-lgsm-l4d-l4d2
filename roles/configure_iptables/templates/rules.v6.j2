@@ -1,0 +1,14 @@
+*filter
+
+# Disallow INPUT/FORWARD as the default filter policy
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Allow internal traffic on the loopback device
+-A INPUT -i lo -j ACCEPT
+
+# Accepts all established inbound connections
+-A INPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+COMMIT

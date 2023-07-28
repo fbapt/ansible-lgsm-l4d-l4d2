@@ -1,0 +1,51 @@
+---
+- name: Fix cfg directory permissions
+  ansible.builtin.file:
+    path: "{{ item.path }}/cfg"
+    mode: "0755"
+    state: directory
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "path: {{ item.path }}/cfg mode: 0755"
+
+- name: Fix sourcemod directory permissions
+  ansible.builtin.file:
+    path: "{{ item.path }}/cfg/sourcemod"
+    mode: "0755"
+    state: directory
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "path: {{ item.path }}/cfg/sourcemod mode: 0755"
+
+- name: Fix recursively permissions of files in addons folder
+  ansible.builtin.shell: |
+    set -o pipefail
+    find {{ item.path }}/addons -type f -print0 | xargs -0 chmod 644
+  args:
+    executable: /usr/bin/bash
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "find {{ item.path }}/addons -type f -print0 | xargs -0 chmod 644"
+  changed_when: false
+
+- name: Fix recursively permissions of directories in addons folder
+  ansible.builtin.shell: |
+    set -o pipefail
+    find {{ item.path }}/addons -type d -print0 | xargs -0 chmod 755
+  args:
+    executable: /usr/bin/bash
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "find {{ item.path }}/addons -type d -print0 | xargs -0 chmod 755"
+  changed_when: false
+
+- name: Fix recursively permissions of files in cfg sourcemod folder
+  ansible.builtin.shell: |
+    set -o pipefail
+    find {{ item.path }}/cfg/sourcemod -type f -print0 | xargs -0 chmod 644
+  args:
+    executable: /usr/bin/bash
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "find {{ item.path }}/cfg/sourcemod -type f -print0 | xargs -0 chmod 644"
+  changed_when: false

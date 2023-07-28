@@ -1,0 +1,13 @@
+---
+- name: Copy metamod plugins files to remote game server
+  ansible.builtin.copy:
+    src: "files/{{ item.user }}/metamod_plugins/"
+    dest: "{{ item.path }}/addons/"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: "0644"
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "dest: {{ item.path }}/addons/"
+  when: not ansible_check_mode and item.metamod_plugins | bool
+  tags: metamod_plugins

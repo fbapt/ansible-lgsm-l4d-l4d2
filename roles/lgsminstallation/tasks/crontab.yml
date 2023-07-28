@@ -1,0 +1,38 @@
+---
+- name: Crontab config at reboot
+  ansible.builtin.cron:
+    name: "{{ item.1.name }}"
+    user: "{{ item.0.user }}"
+    special_time: reboot
+    job: "sleep 60 && /home/{{ item.0.user }}/{{ item.0.game_name }} {{ item.1.command }} > /dev/null 2>&1"
+    state: present
+  loop: "{{ lgsm | subelements('crontab_reboot') }}"
+  loop_control:
+    label: "Name: {{ item.1.name }}
+      User: {{ item.0.user }}
+      Special_time: reboot
+      job: sleep 60 && /home/{{ item.0.user }}/{{ item.0.game_name }} {{ item.1.command }} > /dev/null 2>&1"
+  tags: crontab
+
+- name: Crontab config
+  ansible.builtin.cron:
+    name: "{{ item.1.name }}"
+    user: "{{ item.0.user }}"
+    minute: "{{ item.1.minute }}"
+    hour: "{{ item.1.hour }}"
+    day: "{{ item.1.day }}"
+    month: "{{ item.1.month }}"
+    weekday: "{{ item.1.weekday }}"
+    job: "/home/{{ item.0.user }}/{{ item.0.game_name }} {{ item.1.command }} > /dev/null 2>&1"
+    state: present
+  loop: "{{ lgsm | subelements('crontab') }}"
+  loop_control:
+    label: "Name: {{ item.1.name }}
+      User: {{ item.0.user }}
+      Minute: {{ item.1.minute }}
+      Hour: {{ item.1.hour }}
+      Day: {{ item.1.day }}
+      Month: {{ item.1.month }}
+      Weekday: {{ item.1.weekday }}
+      Job: /home/{{ item.0.user }}/{{ item.0.game_name }} {{ item.1.command }} > /dev/null 2>&1"
+  tags: crontab

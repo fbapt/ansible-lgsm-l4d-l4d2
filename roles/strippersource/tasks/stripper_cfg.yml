@@ -1,0 +1,13 @@
+---
+- name: Copy stripper cfg files to remote game server
+  ansible.builtin.copy:
+    src: "files/{{ item.user }}/stripper_cfg/"
+    dest: "{{ item.path }}/addons/stripper"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: "0644"
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "src: {{ item.user }}/stripper_cfg/ dest: {{ item.path }}/addons/stripper"
+  when: item.stripper_cfg | bool
+  tags: stripper_cfg

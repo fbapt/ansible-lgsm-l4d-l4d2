@@ -1,0 +1,52 @@
+---
+- name: Download lgsm
+  ansible.builtin.get_url:
+    url: "{{ lgsm_url_script }}"
+    dest: "/home/{{ item.user }}/{{ lgsm_script }}"
+    mode: "0755"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "url: {{ lgsm_url_script }} dest: /home/{{ item.user }}/{{ lgsm_script }}"
+  when: not ansible_check_mode
+
+- name: Create script for a game server
+  become_user: "{{ item.user }}"
+  ansible.builtin.shell: "/home/{{ item.user }}/{{ lgsm_script }} {{ item.game_name }}"
+  args:
+    chdir: "/home/{{ item.user }}"
+    creates: "/home/{{ item.user }}/{{ item.game_name }}"
+    executable: /usr/bin/bash
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "creates: /home/{{ item.user }}/{{ item.game_name }}"
+  when: not ansible_check_mode
+
+- name: Download and installation of game server
+  become_user: "{{ item.user }}"
+  ansible.builtin.shell: "/home/{{ item.user }}/{{ item.game_name }} auto-install"
+  args:
+    chdir: "/home/{{ item.user }}"
+    creates: "/home/{{ item.user }}/serverfiles"
+    executable: /usr/bin/bash
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "creates: /home/{{ item.user }}/serverfiles"
+  when: not ansible_check_mode
+
+- name: Include tasks copy lgsm cfg files
+  ansible.builtin.include_tasks: lgsm_cfg.yml
+  tags: lgsm_cfg
+
+- name: Include tasks copy server cfg files
+  ansible.builtin.include_tasks: server_cfg.yml
+  tags: server_cfg
+
+- name: Include tasks copy server files
+  ansible.builtin.include_tasks: serverfiles.yml
+  tags: serverfiles
+
+- name: Include tasks crontab
+  ansible.builtin.include_tasks: crontab.yml
+  tags: crontab

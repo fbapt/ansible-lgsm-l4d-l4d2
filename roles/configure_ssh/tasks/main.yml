@@ -1,0 +1,33 @@
+---
+- name: Block ssh
+  notify: Restart ssh iptables or nftables
+  block:
+    - name: Template sshd config
+      ansible.builtin.template:
+        src: sshd_config.j2
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copy ssh moduli
+      ansible.builtin.copy:
+        src: moduli
+        dest: /etc/ssh/moduli
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copy ssh audit hardening
+      ansible.builtin.copy:
+        src: ssh-audit_hardening.conf
+        dest: /etc/ssh/sshd_config.d/ssh-audit_hardening.conf
+        owner: root
+        group: root
+        mode: "0644"
+
+- name: Enable ssh
+  ansible.builtin.systemd:
+    name: ssh
+    enabled: true
+  when: not ansible_check_mode

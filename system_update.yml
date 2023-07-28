@@ -1,0 +1,6 @@
+---
+- name: Playbook system update
+  hosts: lgsmhosts
+  become: true
+  roles:
+    - { role: system_update, tags: system_update }

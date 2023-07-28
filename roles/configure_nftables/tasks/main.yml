@@ -1,0 +1,37 @@
+---
+- name: Remove iptables
+  ansible.builtin.package:
+    name: "{{ iptables_dependencies }}"
+    state: absent
+  notify: Restart ssh iptables or nftables
+
+- name: Apt get update
+  ansible.builtin.apt:
+    update_cache: true
+  when: not ansible_check_mode
+
+- name: Remove dependencies that are no longer required
+  ansible.builtin.apt:
+    autoremove: true
+    force: true
+
+- name: Installation
+  ansible.builtin.package:
+    name: nftables
+    state: present
+  when: not ansible_check_mode
+
+- name: Generate nftables config
+  ansible.builtin.template:
+    src: nftables.j2
+    dest: /etc/nftables.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart ssh iptables or nftables
+
+- name: Enable nftables
+  ansible.builtin.systemd:
+    name: nftables
+    enabled: true
+  when: not ansible_check_mode

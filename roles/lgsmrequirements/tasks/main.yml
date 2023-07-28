@@ -1,0 +1,42 @@
+---
+- name: Load os specific variables
+  ansible.builtin.include_vars: "group_vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+
+- name: Add contrib non free debian repository
+  ansible.builtin.template:
+    src: sources.list.j2
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+
+- name: Enable i386 architecture
+  ansible.builtin.command:
+    cmd: dpkg --add-architecture i386
+  changed_when: false
+
+- name: Apt get update
+  ansible.builtin.apt:
+    update_cache: true
+  when: not ansible_check_mode
+
+- name: Accept steam eula
+  ansible.builtin.debconf:
+    name: steamcmd
+    question: steam/question
+    value: 'I AGREE'
+    vtype: select
+
+- name: Accept steam license
+  ansible.builtin.debconf:
+    name: steamcmd
+    question: steam/license
+    value: ''
+    vtype: note
+
+- name: Install lgsm dependencies
+  ansible.builtin.package:
+    name: "{{ lgsm_dependencies }}"
+    state: present
+  when: not ansible_check_mode

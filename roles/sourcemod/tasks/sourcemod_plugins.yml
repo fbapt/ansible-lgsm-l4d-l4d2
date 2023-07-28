@@ -1,0 +1,37 @@
+---
+- name: Remove nextmap plugin to avoid error in log
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}/addons/sourcemod/plugins/{{ sourcemod_plugin_to_remove }}.smx"
+    state: absent
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "path: {{ item.path }}/addons/sourcemod/plugins/{{ sourcemod_plugin_to_remove }}.smx"
+  when: item.sourcemod_plugins | bool
+  tags: sourcemod_plugins
+
+- name: Copy Sourcemod addons files to remote game server
+  ansible.builtin.copy:
+    src: "files/{{ item.user }}/sourcemod_plugins/addons/sourcemod/"
+    dest: "{{ item.path }}/addons/sourcemod/"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: "0644"
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "dest: {{ item.path }}/addons/sourcemod/"
+  when: not ansible_check_mode and item.sourcemod_plugins | bool
+  tags: sourcemod_plugins
+
+- name: Copy Sourcemod addons cfg files to remote game server
+  ansible.builtin.copy:
+    src: "files/{{ item.user }}/sourcemod_plugins/cfg/sourcemod/"
+    dest: "{{ item.path }}/cfg/sourcemod/"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: "0644"
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "dest: {{ item.path }}/cfg/sourcemod/"
+  when: not ansible_check_mode and item.sourcemod_plugins | bool
+  tags: sourcemod_plugins

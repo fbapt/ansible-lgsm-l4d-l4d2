@@ -1,0 +1,71 @@
+---
+- name: Check the latest version of Sourcemod
+  ansible.builtin.uri:
+    url: "{{ sourcemod_url }}/{{ sourcemod_branch }}/sourcemod-latest-linux"
+    return_content: true
+  register: sourcemod_filename
+  changed_when: false
+
+- name: Check the currently installed version of Sourcemod
+  ansible.builtin.command:
+    cmd: grep -qF {{ sourcemod_filename.content }} {{ item.path }}/addons/sourcemod/VERSION
+  register: sourcemod_source_current
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "cmd: grep -qF {{ sourcemod_filename.content | default() }} {{ item.path }}/addons/sourcemod/VERSION"
+  changed_when: false
+  failed_when: false
+  when: not ansible_check_mode
+
+- name: Block Sourcemod installation
+  when: not ansible_check_mode and item.1.rc != 0
+  block:
+    - name: Download the latest version
+      ansible.builtin.get_url:
+        url: "{{ sourcemod_url }}/{{ sourcemod_branch }}/{{ sourcemod_filename.content }}"
+        dest: "/home/{{ item.0.user }}"
+        mode: "0755"
+        owner: "{{ item.0.user }}"
+        group: "{{ item.0.user }}"
+      loop: "{{ lgsm | zip(sourcemod_source_current.results) | list }}"
+      loop_control:
+        label: "url: {{ sourcemod_url }}/{{ sourcemod_branch }}/{{ sourcemod_filename.content | default() }} dest: /home/{{ item.0.user }}"
+
+    - name: Extract the downloaded file
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "/home/{{ item.0.user }}/{{ sourcemod_filename.content }}"
+        dest: "{{ item.0.path }}"
+        owner: "{{ item.0.user }}"
+        group: "{{ item.0.user }}"
+        mode: "0755"
+      loop: "{{ lgsm | zip(sourcemod_source_current.results) | list }}"
+      loop_control:
+        label: "src: /home/{{ item.0.user }}/{{ sourcemod_filename.content | default() }} dest {{ item.0.path }}"
+
+    - name: Remove the archive
+      ansible.builtin.file:
+        path: "/home/{{ item.0.user }}/{{ sourcemod_filename.content }}"
+        state: absent
+      loop: "{{ lgsm | zip(sourcemod_source_current.results) | list }}"
+      loop_control:
+        label: "path: /home/{{ item.0.user }}/{{ sourcemod_filename.content | default() }}"
+
+    - name: Write the current Sourcemod version
+      ansible.builtin.copy:
+        dest: "{{ item.0.path }}/addons/sourcemod/VERSION"
+        content: "{{ sourcemod_filename.content }}"
+        owner: "{{ item.0.user }}"
+        group: "{{ item.0.user }}"
+        mode: "0644"
+      loop: "{{ lgsm | zip(sourcemod_source_current.results) | list }}"
+      loop_control:
+        label: "dest: {{ item.0.path }}/addons/sourcemod/VERSION"
+
+- name: Include task Configure admins
+  ansible.builtin.include_tasks: admins.yml
+  tags: admins
+
+- name: Include tasks copy sourcemod plugins files
+  ansible.builtin.include_tasks: sourcemod_plugins.yml
+  tags: sourcemod_plugins

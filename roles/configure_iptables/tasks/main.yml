@@ -1,0 +1,21 @@
+---
+- name: Installation
+  ansible.builtin.package:
+    name: "{{ iptables_dependencies }}"
+    state: present
+
+- name: Generate iptables config
+  ansible.builtin.template:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ iptables_ip | dict2items }}"
+  notify: Restart ssh iptables or nftables
+
+- name: Enable iptables
+  ansible.builtin.systemd:
+    name: iptables
+    enabled: true
+  when: not ansible_check_mode

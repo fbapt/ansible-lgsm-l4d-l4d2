@@ -1,0 +1,12 @@
+---
+- name: Playbook configure ssh nftables
+  hosts: lgsmhosts
+  become: true
+  roles:
+    - { role: configure_ssh, tags: configure_ssh }
+    - { role: configure_nftables, tags: configure_nftables }
+  handlers:
+    - name: Restart ssh iptables or nftables
+      ansible.builtin.shell: systemctl restart ssh nftables
+      tags:
+        - skip_ansible_lint

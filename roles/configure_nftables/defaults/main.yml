@@ -1,0 +1,7 @@
+---
+iptables_dependencies:
+  - iptables
+  - iptables-persistent
+
+ssh_port: 22
+nftables_games_servers_ports: "27015, 27016"

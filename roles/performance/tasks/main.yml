@@ -1,0 +1,73 @@
+---
+- name: Install useful packages
+  ansible.builtin.package:
+    name: "{{ useful_packages }}"
+    state: present
+  when: not ansible_check_mode
+
+- name: Update gai conf to set priority ipv4 over ipv6
+  ansible.builtin.replace:
+    path: /etc/gai.conf
+    regexp: '#precedence ::ffff:0:0/96  100'
+    replace: 'precedence ::ffff:0:0/96  100'
+
+- name: Cpupower config systemd at system boot
+  ansible.builtin.template:
+    src: cpuperf.service.j2
+    dest: /etc/systemd/system/cpuperf.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Cpupower systemd start mode performance
+  ansible.builtin.systemd:
+    name: cpuperf
+    enabled: true
+    daemon_reload: true
+    state: started
+  when: not ansible_check_mode
+
+- name: Tuned-adm profile network-latency
+  ansible.builtin.command:
+    cmd: tuned-adm profile network-latency
+  changed_when: false
+
+- name: Grub disable mitigations
+  ansible.builtin.copy:
+    src: grub.cfg
+    dest: /etc/default/grub
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  notify: Update-grub
+
+- name: Copy systctl config
+  ansible.builtin.copy:
+    src: sysctl.conf
+    dest: /etc/sysctl.d/sysctl.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Copy hyperthreading script toggleHT
+  ansible.builtin.copy:
+    src: toggleHT.sh
+    dest: /root/toggleHT.sh
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Crontab enable power control ethernet and disable hyperthreading
+  ansible.builtin.cron:
+    name: "{{ item.name }}"
+    user: root
+    special_time: reboot
+    job: "sleep 30 && {{ item.job }}"
+    state: present
+  loop: "{{ crontab_reboot }}"
+  loop_control:
+    label: "Name: {{ item.name }}
+      User: root
+      Special_time: reboot
+      job: sleep 30 && {{ item.job }}"

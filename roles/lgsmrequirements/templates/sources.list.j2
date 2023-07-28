@@ -1,0 +1,8 @@
+deb {{ url_deb }} {{ ansible_distribution_release }} main {{ contrib }} {{ nonfree }} {{ nonfreefirmware }}
+deb-src {{ url_deb }} {{ ansible_distribution_release }} main {{ contrib }} {{ nonfree }} {{ nonfreefirmware }}
+
+deb {{ url_deb_secu }} {{ ansible_distribution_release }}-security main {{ contrib }} {{ nonfree }} {{ nonfreefirmware }}
+deb-src {{ url_deb_secu }} {{ ansible_distribution_release }}-security main {{ contrib }} {{ nonfree }} {{ nonfreefirmware }}
+
+deb {{ url_deb }} {{ ansible_distribution_release }}-updates main {{ contrib }} {{ nonfree }} {{ nonfreefirmware }}
+deb-src {{ url_deb }} {{ ansible_distribution_release }}-updates main {{ contrib }} {{ nonfree }} {{ nonfreefirmware }}

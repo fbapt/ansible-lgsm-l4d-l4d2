@@ -1,0 +1,32 @@
+---
+lgsm_dependencies:
+  - steamcmd
+  - bc
+  - binutils
+  - bsdmainutils
+  - bzip2
+  - ca-certificates
+  - cpio
+  - curl
+  - distro-info
+  - file
+  - gzip
+  - hostname
+  - jq
+  - lib32gcc-s1
+  - lib32stdc++6
+  - libsdl2-2.0-0:i386
+  - netcat
+  - python3
+  - tar
+  - tmux
+  - unzip
+  - util-linux
+  - wget
+  - xz-utils
+
+contrib: contrib
+nonfree: non-free
+nonfreefirmware: ""
+url_deb: http://deb.debian.org/debian/
+url_deb_secu: http://security.debian.org/debian-security

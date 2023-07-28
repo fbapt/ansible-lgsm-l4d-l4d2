@@ -1,0 +1,11 @@
+---
+lgsmhosts:
+   hosts:
+      production:
+         ansible_port: 22
+         ansible_host: 192.168.1.100
+         ansible_user: ansible
+      testing:
+         ansible_port: 22
+         ansible_host: 192.168.1.101
+         ansible_user: ansible

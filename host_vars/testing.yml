@@ -1,0 +1,120 @@
+---
+lgsm:
+  - user: "l4dserver"
+    game_name: "l4dserver"
+    directory: "left4dead"
+    password: "{{ l4dserver_password }}"
+    ssh-keys:
+      - type: ssh-rsa
+        key: "AAAAB3NzaC1yc2EAAAADAQABAAABAQCxq38ackhbuz+QYAOiC9PtFa5G3TERInfMVrO5HSYOt8Y4SsRl7kjjb8KC0PrqIkKxlZ7nbaOdACqKMXHLCGVDQ\
+              udOALjErxTvwOcxkIqkXUbNPKcG08YPJZHmr0z6k7xxssfm059n0yJZG7c7wup16Mj7GJR2Nfqm0d6Z8Hj624On/aHgW2zX9pD+mlp3toGVMYDMCBcpfV0\
+              rMn+P4iLSa3RfxL29CGW7o2RNv/YBybzavzKp+XT4Kyup6MLx/qe/9XdwXBhG7/WaByyCDED+9AJMtlpSRo3+DZsgGhA2mOmo++TlW+UNopz6GFMUc/VdGo\
+              5CFtOzQbbigesTkR4P"
+        comment: l4dserver@LGSM-Debian
+    path: /home/l4dserver/serverfiles/left4dead
+    lgsm_config_path: /home/l4dserver/lgsm/config-lgsm
+    ld_library_path: export LD_LIBRARY_PATH=/home/l4dserver/.steam/steamcmd/linux32/:/home/l4dserver/serverfiles/bin/
+    rdtsc_frequency: export RDTSC_FREQUENCY=disabled
+    sourcemod_admins:
+      - name: player1
+        identity: STEAM_0:0:xxxxxxxxx
+        flags: abcdefghijklmn
+      - name: player2
+        identity: STEAM_1:1:xxxxxxxxx
+        flags: abcfgjk
+    metamod_plugins: true
+    sourcemod_plugins: true
+    lgsm_cfg: true
+    server_cfg: true
+    serverfiles: true
+    stripper_cfg: true
+    maps: true
+    crontab_reboot:
+      - name: "l4dserver_reboot_monitor"
+        command: "monitor"
+    crontab:
+      - name: "l4dserver_update"
+        minute: "*/30"
+        hour: "*"
+        day: "*"
+        month: "*"
+        weekday: "*"
+        command: "update"
+      - name: "l4dserver_update-lgsm"
+        minute: "0"
+        hour: "0"
+        day: "*"
+        month: "*"
+        weekday: "0"
+        command: "update-lgsm"
+      - name: "l4dserver_restart-everyday"
+        minute: "0"
+        hour: "4"
+        day: "*"
+        month: "*"
+        weekday: "*"
+        command: "restart"
+  - user: "l4d2server"
+    game_name: "l4d2server"
+    directory: "left4dead2"
+    password: "{{ l4d2server_password }}"
+    ssh-keys:
+      - type: ssh-rsa
+        key: "AAAAB3NzaC1yc2EAAAADAQABAAABAQCNzP3WO/bxx0QZoL0waQDg9AXUfXkp93WpcuFVREfYLpLP9+23vLAInWYM7rFFzlWfpOJ7l+yByztW3jXg\
+              7CtRKpiWduBFcvRMgn+FNOURcL3Y8hfOfURy8QvWMrTOqITgcwZMo35SdeEVIvDTbhBzrbBsguJzuogl76J23hz7RHCfSh+3ToTyVnbZza8eBOHC9\
+              Q7EAW2bH7NDnHB/iBSNEbjXvKUQscZ56NVE3onRzaBL0wbboKH3/nRqU/bGhJt3mQKvWolh0LqfjzzGTadQ4YglfivKfD5/FaaBqQj0Oz4syWwIwQI\
+              F7sBi0jB6R9jes9/uDcoe7+E5u3QqfHd"
+        comment: l4d2server@LGSM-Debian
+    path: /home/l4d2server/serverfiles/left4dead2
+    lgsm_config_path: /home/l4d2server/lgsm/config-lgsm
+    ld_library_path: export LD_LIBRARY_PATH=/home/l4d2server/.steam/steamcmd/linux32/:/home/l4d2server/serverfiles/bin/
+    rdtsc_frequency: ""
+    sourcemod_admins:
+      - name: player1
+        identity: STEAM_0:0:xxxxxxxxx
+        flags: abcdefghijklmn
+      - name: player2
+        identity: STEAM_1:1:xxxxxxxxx
+        flags: abcfgjk
+    metamod_plugins: true
+    sourcemod_plugins: true
+    lgsm_cfg: true
+    server_cfg: true
+    stripper_cfg: true
+    maps: true
+    serverfiles: true
+    crontab_reboot:
+      - name: "l4d2server_reboot_monitor"
+        command: "monitor"
+    crontab:
+      - name: "l4d2server_update"
+        minute: "*/30"
+        hour: "*"
+        day: "*"
+        month: "*"
+        weekday: "*"
+        command: "update"
+      - name: "l4d2server_update-lgsm"
+        minute: "0"
+        hour: "0"
+        day: "*"
+        month: "*"
+        weekday: "0"
+        command: "update-lgsm"
+      - name: "l4d2server_restart-everyday"
+        minute: "0"
+        hour: "4"
+        day: "*"
+        month: "*"
+        weekday: "*"
+        command: "restart"
+
+steamcmd_locales_secondary: fr_FR.UTF-8 UTF-8
+
+iptables_games_servers_ports: 27015,27016
+ssh_port: 5976
+ssh_authenticationmethods: publickey
+nftables_games_servers_ports: "27015, 27016"
+
+minimum_cpu_frequency: 3.2GHz
+maximum_cpu_frequency: 3.2GHz

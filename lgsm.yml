@@ -1,0 +1,13 @@
+---
+- name: Playbook lgsm
+  hosts: lgsmhosts
+  become: true
+  roles:
+    - { role: lgsmrequirements, tags: lgsmrequirements }
+    - { role: lgsmuser, tags: lgsmuser }
+    - { role: lgsminstallation, tags: lgsminstallation }
+    - { role: metamod, tags: metamod }
+    - { role: sourcemod, tags: sourcemod }
+    - { role: strippersource, tags: strippersource }
+    - { role: maps, tags: maps }
+    - { role: fixpermissions, tags: fixpermissions }

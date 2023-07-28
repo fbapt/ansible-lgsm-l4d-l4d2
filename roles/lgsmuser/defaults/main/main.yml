@@ -1,0 +1,5 @@
+---
+limit_type: soft
+limit_item: nofile
+limit_value: "16384"
+steamcmd_locales_secondary: fr_FR.UTF-8 UTF-8

@@ -1,0 +1,23 @@
+---
+useful_packages:
+  - linux-cpupower
+  - tuned
+  - dmidecode
+  - lm-sensors
+  - htop
+  - lsb-release
+  - wget
+  - curl
+  - net-tools
+  - traceroute
+  - lsof
+  - strace
+  - dnsutils
+  - neofetch
+  - gdb
+
+crontab_reboot:
+  - name: "Enable power control ethernet on"
+    job: echo "on" > /sys/class/net/"$(ls /sys/class/net/ | grep -E '^e')"/power/control
+  - name: "Disable hyperthreading"
+    job: echo d | /root/toggleHT.sh
