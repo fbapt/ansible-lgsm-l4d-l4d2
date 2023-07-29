@@ -1,7 +1,3 @@
-notes :
-
-Tested on Debian 11 and 12
-
 1// Preparing ssh connection on ansible nodes :
 As root user :
 
@@ -114,6 +110,8 @@ Execute performance playbook
 	ansible-playbook --limit production performance.yml
 
 Playbooks have been tested with ansible-lint
+
+Tested on Debian 11 and 12
 
 Documentation of lgsm :
 
