@@ -6,7 +6,7 @@ Tested on Debian 11 and 12
 As root user :
 
 	apt-get install sudo openssh-client python3 python3-apt
-	export nodeuser=example
+	nodeuser=example
 	echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
 	ip a
 
@@ -23,8 +23,8 @@ As root user install sudo for ansible user :
 As ansible user copy ssh key each ansible nodes :
 
 	ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')"
-	export nodeip=x.x.x.x
-	export nodeuser=example
+	nodeip=x.x.x.x
+	nodeuser=example
 	ssh-copy-id ${nodeuser}@${nodeip}
 
 3// Installing packages on the ansible controller :
