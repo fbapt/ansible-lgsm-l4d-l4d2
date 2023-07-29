@@ -1,4 +1,5 @@
 1// Preparing ssh connection on ansible nodes :
+
 As root user :
 
 	apt-get install sudo openssh-client python3 python3-apt
