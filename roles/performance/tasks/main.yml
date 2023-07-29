@@ -58,7 +58,7 @@
     group: root
     mode: "0755"
 
-- name: Crontab enable power control ethernet and disable hyperthreading
+- name: Crontab disable hyperthreading
   ansible.builtin.cron:
     name: "{{ item.name }}"
     user: root
