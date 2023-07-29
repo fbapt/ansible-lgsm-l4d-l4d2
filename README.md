@@ -113,6 +113,8 @@ Execute performance playbook
 
 	ansible-playbook --limit production performance.yml
 
+Playbooks have been tested with ansible-lint
+
 Documentation of lgsm :
 
 https://docs.linuxgsm.com/
