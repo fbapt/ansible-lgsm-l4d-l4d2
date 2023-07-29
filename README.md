@@ -31,8 +31,8 @@ As ansible user copy ssh key each ansible nodes :
 
 As ansible user to create a virtual environment :
 
-    	cd
-    	python3 -m venv venv
+	cd
+	python3 -m venv venv
 	logout
  
 As ansible user to install ansible packages :
