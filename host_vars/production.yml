@@ -14,6 +14,7 @@ lgsm:
     path: /home/l4dserver/serverfiles/left4dead
     lgsm_config_path: /home/l4dserver/lgsm/config-lgsm
     ld_library_path: export LD_LIBRARY_PATH=/home/l4dserver/.steam/steamcmd/linux32/:/home/l4dserver/serverfiles/bin/
+    rdtsc_frequency: export RDTSC_FREQUENCY=disabled
     sourcemod_admins:
       - name: player1
         identity: STEAM_0:0:xxxxxxxxx
@@ -67,6 +68,7 @@ lgsm:
     path: /home/l4d2server/serverfiles/left4dead2
     lgsm_config_path: /home/l4d2server/lgsm/config-lgsm
     ld_library_path: export LD_LIBRARY_PATH=/home/l4d2server/.steam/steamcmd/linux32/:/home/l4d2server/serverfiles/bin/
+    rdtsc_frequency: ""
     sourcemod_admins:
       - name: player1
         identity: STEAM_0:0:xxxxxxxxx

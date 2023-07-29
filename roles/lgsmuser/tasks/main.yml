@@ -44,6 +44,17 @@
     label: "dest: /home/{{ item.user }}/.profile line: {{ item.ld_library_path }}"
   when: not ansible_check_mode
 
+- name: Add rdtsc_frequency to disabled benchmark for l4d1 in user .profile
+  ansible.builtin.lineinfile:
+    dest: /home/{{ item.user }}/.profile
+    state: present
+    line: "{{ item.rdtsc_frequency }}"
+    mode: "0644"
+  loop: "{{ lgsm }}"
+  loop_control:
+    label: "dest: /home/{{ item.user }}/.profile line: {{ item.rdtsc_frequency }}"
+  when: not ansible_check_mode
+
 - name: Set locale for steamcmd
   community.general.locale_gen:
     name: en_US.UTF-8
