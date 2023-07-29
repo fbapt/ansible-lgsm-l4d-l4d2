@@ -63,7 +63,11 @@ If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/se
 
 ##  Configure files
 
+Get repository
+
+```bash
 git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
+```
 
 Edit files :
 
