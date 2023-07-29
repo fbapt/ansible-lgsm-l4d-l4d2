@@ -1,5 +1,7 @@
 # ansible-lgsm-l4d-l4d2
 
+> :warning: You need to have some experience with Ansible and left4dead games before using this repo !
+
 ## Preparing ssh connection on ansible nodes :
 
 As root user :
@@ -63,38 +65,46 @@ If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/se
 
 git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
 
-Edit 
+Edit files :
 
-- inventory/lgsmhosts.yml with you username ssh port to change and IP of the server
+- inventory/lgsmhosts.yml
+- host_vars/production.yml
+- group_vars/Debian_XX.yml
+- vault.yml
+- .vault_pass
+- Add l4d1/2 configuration files in each roles, examples :
 
-- host_vars/production.yml with your configuration :
-  
-  Server, user, ssh port
-  
-  Change users ssh pub keys, you can generate ssh key with PuTTYgen (save pub key on the user example l4dserver)
-  
-  Change user passwords
-  
-  Change sourcemod admins
-  
-- group_vars/Debian_XX if you need to edit url of apt repository
-- vault.yml change password of l4d1 and l4d2 user vault.yml
-- .vault_pass change password of ansible vault
-- Add l4d1/2 configuration files in each roles
+	#### In role/lgsminstallation/files/l4d[2]server/lgsm_cfg
+	
+	put file like l4dserver.cfg
+	  
+	#### In role/lgsminstallation/files/l4d[2]server/server
+	
+  	put file like host.txt or mymotd.txt
+	  
+	#### In role/lgsminstallation/files/l4d[2]server/server_cfg
+	
+  	put file like server.cfg, l4dserver.cfg
+	  
+	#### In role/maps/files/l4d[2]server/maps
 
-  In role/lgsminstallation/files/l4d[2]server/lgsm_cfg ---> example l4dserver.cfg
-  
-  In role/lgsminstallation/files/l4d[2]server/server ---> example host.txt or mymotd.txt
-  
-  In role/lgsminstallation/files/l4d[2]server/server_cfg ---> example server.cfg, l4dserver.cfg
-  
-  In role/maps/files/l4d[2]server/maps ---> example workshops maps in workshops folder for l4d2 only
-  
-  In role/metamod/files/l4d[2]server/metamod_plugins ---> example files in metamod folder
-  
-  In role/sourcemod/files/l4d[2]server/sourcemod_plugins ---> example files in addons and cfg/sourcemod folders
-  
-  In role/strippersource/files/l4d[2]server/stripper_cfg --> example in dumps and maps put cfg maps
+	put maps not on the steam workshops
+
+	#### In role/maps/files/l4d2server/maps/workshops
+
+  	put workshops maps in workshops folder for l4d2 only
+	  
+	#### In role/metamod/files/l4d[2]server/metamod_plugins
+	
+  	put files in metamod folder
+	  
+	#### In role/sourcemod/files/l4d[2]server/sourcemod_plugins
+	
+  	put files in addons and cfg/sourcemod folders
+	  
+	#### In role/strippersource/files/l4d[2]server/stripper_cfg
+	
+  	put cfg maps in dumps and maps folders
 
 ##  Installation of l4d1/2 server
 
