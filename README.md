@@ -61,11 +61,17 @@ git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
 Edit 
 
 - inventory/lgsmhosts.yml with you username ssh port to change and IP of the server
+
 - host_vars/production.yml with your configuration :
+  
   Server, user, ssh port
+  
   Change users' ssh pub keys
+  
   Change user passwords
+  
   Change sourcemod admins
+  
 - group_vars/Debian_XX if you need to edit url of apt repository
 - vault.yml change password of l4d1 and l4d2 user vault.yml
 - .vault_pass change password of ansible vault
