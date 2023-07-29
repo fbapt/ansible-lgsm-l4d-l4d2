@@ -1,45 +1,55 @@
-1// Preparing ssh connection on ansible nodes :
+## Preparing ssh connection on ansible nodes :
 
 As root user :
 
-	apt-get install sudo openssh-client python3 python3-apt
-	nodeuser=example
-	echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
-	ip a
+```bash
+apt-get install sudo openssh-client python3 python3-apt
+nodeuser=example
+echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
+ip a
+```
 
 Copy ip of ansible nodes, it will necessary to ssh copy command for ansible controller.
 
-2// Preparing ssh connection on the controller :
+##  Preparing ssh connection on the controller :
 
 As root user install sudo for ansible user :
 
-	adduser ansible
-	apt-get install sudo whois python3 python3-apt python3-venv python3-full
-	echo ansible ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/ansible
- 
+```bash
+adduser ansible
+apt-get install sudo whois python3 python3-apt python3-venv python3-full
+echo ansible ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/ansible
+```
+
 As ansible user copy ssh key each ansible nodes :
 
-	ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')"
-	nodeip=x.x.x.x
-	nodeuser=example
-	ssh-copy-id ${nodeuser}@${nodeip}
+```bash
+ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')"
+nodeip=x.x.x.x
+nodeuser=example
+ssh-copy-id ${nodeuser}@${nodeip}
+```
 
-3// Installing packages on the ansible controller :
+##  Installing packages on the ansible controller :
 
 As ansible user to create a virtual environment :
 
-	cd
-	python3 -m venv venv
-	logout
- 
+```bash
+cd
+python3 -m venv venv
+logout
+```
+
 As ansible user to install ansible packages :
 
-	pip install ansible ansible-core ansible-lint
+```bash
+pip install ansible ansible-core ansible-lint
+echo "source $HOME/venv/bin/activate" | tee -a $HOME/.profile
+```
 
-add source "$HOME"/venv/bin/activate in .profile
- 
 If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
 
+```bash
     ..........,
 	"terminal.integrated.shellArgs.linux": ["-l"],
 	"terminal.integrated.defaultProfile.linux": "bash",
@@ -50,8 +60,9 @@ If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/se
 		"args": [ "-l" ]
 	  },
 	}
+```
 
-4// Configure files
+##  Configure files
 
 git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
 
@@ -88,27 +99,35 @@ Edit
   
   In role/strippersource/files/l4d[2]server/stripper_cfg --> example in dumps and maps put cfg maps
 
-5// Installation of l4d1/2 server
+##  Installation of l4d1/2 server
 
 As ansible user on the ansible controller :
 
 Execute playbooks
 
-	ansible-playbook --limit production system_update.yml
-	ansible-playbook --limit production lgsm.yml
+```bash
+ansible-playbook --limit production system_update.yml
+ansible-playbook --limit production lgsm.yml
+```
 
 (optional) If you need to configure firewall nftables or iptables with a harden ssh
 
 Execute iptables or nftables playbook
 
-	ansible-playbook --limit production configure_ssh_nftables.yml
-	ansible-playbook --limit production configure_ssh_iptables.yml
+```bash
+ansible-playbook --limit production configure_ssh_nftables.yml
+ansible-playbook --limit production configure_ssh_iptables.yml
+```
 
 (optional) If you have a dedicated server (not a VM like virtualbox) and need a performance server
 
 Execute performance playbook
 
-	ansible-playbook --limit production performance.yml
+```bash
+ansible-playbook --limit production performance.yml
+```
+
+## About
 
 Playbooks have been tested with ansible-lint
 
