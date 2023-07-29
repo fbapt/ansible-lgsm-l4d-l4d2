@@ -136,7 +136,7 @@ ansible-playbook --limit production performance.yml
 
 ## About
 
-Playbooks have been tested with ansible-lint
+Playbooks have been tested with packages of ansible (8.2.0), ansible-core (2.15.2) and ansible-lint (6.17.2).
 
 Tested on Debian 11 and 12
 
