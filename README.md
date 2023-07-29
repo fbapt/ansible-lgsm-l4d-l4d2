@@ -69,7 +69,7 @@ Edit
   
   Server, user, ssh port
   
-  Change users' ssh pub keys
+  Change users ssh pub keys, you can generate ssh key with PuTTYgen (save pub key on the user example l4dserver)
   
   Change user passwords
   
