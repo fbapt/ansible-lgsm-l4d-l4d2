@@ -28,10 +28,11 @@ As ansible user copy ssh key each ansible nodes :
 	ssh-copy-id ${nodeuser}@${nodeip}
 
 3// Installing packages on the ansible controller :
+
 As ansible user to create a virtual environment :
 
-    cd
-	python3 -m venv venv
+    	cd
+    	python3 -m venv venv
 	logout
  
 As ansible user to install ansible packages :
@@ -85,6 +86,7 @@ Edit
   In role/strippersource/files/l4d[2]server/stripper_cfg --> example in dumps and maps put cfg maps
 
 5// Installation of l4d1/2 server
+
 As ansible user on the ansible controller :
 
 Execute playbooks
