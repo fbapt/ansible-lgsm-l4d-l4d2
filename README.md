@@ -32,19 +32,14 @@ ssh-copy-id ${nodeuser}@${nodeip}
 
 ##  Installing packages on the ansible controller :
 
-As ansible user to create a virtual environment :
+As ansible user to create a virtual environment and install ansible packages :
 
 ```bash
 cd
 python3 -m venv venv
-logout
-```
-
-As ansible user to install ansible packages :
-
-```bash
-pip install ansible ansible-core ansible-lint
 echo "source $HOME/venv/bin/activate" | tee -a $HOME/.profile
+logout
+pip install ansible ansible-core ansible-lint
 ```
 
 If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
