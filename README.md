@@ -101,12 +101,14 @@ Execute playbooks
 	ansible-playbook --limit production lgsm.yml
 
 (optional) If you need to configure firewall nftables or iptables with a harden ssh
+
 Execute iptables or nftables playbook
 
 	ansible-playbook --limit production configure_ssh_nftables.yml
 	ansible-playbook --limit production configure_ssh_iptables.yml
 
 (optional) If you have a dedicated server (not a VM like virtualbox) and need a performance server
+
 Execute performance playbook
 
 	ansible-playbook --limit production performance.yml
