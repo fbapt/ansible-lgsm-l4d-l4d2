@@ -138,6 +138,11 @@ Execute performance playbook
 ansible-playbook --limit production performance.yml
 ```
 
+reboot computer
+```bash
+reboot now
+```
+
 ## About
 
 Playbooks have been tested with packages of ansible (8.2.0), ansible-core (2.15.2) and ansible-lint (6.17.2).
