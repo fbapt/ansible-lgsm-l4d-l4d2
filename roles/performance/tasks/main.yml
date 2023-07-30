@@ -11,22 +11,6 @@
     regexp: '#precedence ::ffff:0:0/96  100'
     replace: 'precedence ::ffff:0:0/96  100'
 
-- name: Cpupower config systemd at system boot
-  ansible.builtin.template:
-    src: cpuperf.service.j2
-    dest: /etc/systemd/system/cpuperf.service
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: Cpupower systemd start mode performance
-  ansible.builtin.systemd:
-    name: cpuperf
-    enabled: true
-    daemon_reload: true
-    state: started
-  when: not ansible_check_mode
-
 - name: Tuned-adm profile network-latency
   ansible.builtin.command:
     cmd: tuned-adm profile network-latency

@@ -1,6 +1,5 @@
 ---
 useful_packages:
-  - linux-cpupower
   - tuned
   - dmidecode
   - lm-sensors
