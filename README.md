@@ -130,7 +130,7 @@ ansible-playbook --limit production configure_ssh_nftables.yml
 ansible-playbook --limit production configure_ssh_iptables.yml
 ```
 
-(optional) If you have a dedicated server (not a VM like virtualbox) and need a performance server
+(optional) If you have a physical dedicated server (not a VM like virtualbox) and need a performance server
 
 Execute performance playbook
 
@@ -138,7 +138,7 @@ Execute performance playbook
 ansible-playbook --limit production performance.yml
 ```
 
-reboot computer
+Reboot computer
 ```bash
 reboot now
 ```
