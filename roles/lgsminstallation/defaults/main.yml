@@ -1,3 +1,3 @@
 ---
 lgsm_script: linuxgsm.sh
-lgsm_url_script: https://{{ lgsm_script }}
+lgsm_url_script: https://raw.githubusercontent.com/GameServerManagers/LinuxGSM/master/{{ lgsm_script }}
