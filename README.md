@@ -61,7 +61,7 @@ If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/se
 	}
 ```
 
-##  Configure files
+##  Configure files of left4dead1 and/or left4dead2
 
 Get repository
 
@@ -109,35 +109,35 @@ Edit files :
 	
   	put cfg maps in dumps and maps folders
 
-##  Installation of l4d1/2 server
+##  Installation of left4dead1 and/or left4dead2 dedicated servers
 
 As ansible user on the ansible controller :
 
-Execute playbooks
+Run the playbooks to install left4dead1 and/or left4dead2 dedicated servers on a Debian 11 or 12 :
 
 ```bash
 ansible-playbook --limit production system_update.yml
 ansible-playbook --limit production lgsm.yml
 ```
 
-(optional) If you need to configure firewall nftables or iptables with a harden ssh
+(optional) If you need to configure firewall nftables or iptables with a harden ssh :
 
-Execute iptables or nftables playbook
+Run iptables or nftables playbook
 
 ```bash
 ansible-playbook --limit production configure_ssh_nftables.yml
 ansible-playbook --limit production configure_ssh_iptables.yml
 ```
 
-(optional) If you have a physical dedicated server (not a VM like virtualbox) and need a performance server
+(optional) If you have a physical dedicated server (not a VM like virtualbox), it is recommended to :
 
-Execute performance playbook
+Run performance playbook
 
 ```bash
 ansible-playbook --limit production performance.yml
 ```
 
-Reboot computer
+Reboot nodes
 ```bash
 reboot now
 ```
