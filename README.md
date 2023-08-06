@@ -72,9 +72,8 @@ git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
 Edit files :
 
 - inventory/lgsmhosts.yml
-- host_vars/production.yml
-- group_vars/Debian_XX.yml
-- vault.yml
+- host_vars/production/production.yml
+- host_vars/production/vault.yml
 - .vault_pass
 - Add l4d1/2 configuration files in each roles, examples :
 
