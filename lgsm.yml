@@ -2,7 +2,6 @@
 - name: Playbook lgsm
   hosts: lgsmhosts
   become: true
-  vars_files: vault.yml
   roles:
     - { role: lgsmrequirements, tags: lgsmrequirements }
     - { role: lgsmuser, tags: lgsmuser }
