@@ -5,15 +5,12 @@ useful_packages:
   - lm-sensors
   - htop
   - lsb-release
-  - wget
-  - curl
   - net-tools
   - traceroute
   - lsof
   - strace
   - dnsutils
   - neofetch
-  - gdb
 
 crontab_reboot:
   - name: "Disable hyperthreading"
