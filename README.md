@@ -75,7 +75,7 @@ Edit files :
 - host_vars/production/production.yml
 - host_vars/production/vault.yml
 - .vault_pass
-- Add l4d1/2 configuration files in each roles, examples :
+- Add l4d1/2 configuration files in each roles if variables in host_vars/production/production.yml are on true, examples :
 
 	#### In role/lgsminstallation/files/l4d[2]server/lgsm_cfg
 	
