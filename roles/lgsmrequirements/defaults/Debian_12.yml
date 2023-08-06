@@ -25,11 +25,6 @@ lgsm_dependencies:
   - wget
   - xz-utils
 
-libcurls_packages:
-  - libcurl3-gnutls:i386
-  - libcurl4-openssl-dev:i386
-  - libcurl4-gnutls-dev:i386
-
 contrib: contrib
 nonfree: non-free
 nonfreefirmware: non-free-firmware
