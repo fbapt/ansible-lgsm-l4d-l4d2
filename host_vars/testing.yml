@@ -115,6 +115,3 @@ iptables_games_servers_ports: 27015,27016
 ssh_port: 5976
 ssh_authenticationmethods: publickey
 nftables_games_servers_ports: "27015, 27016"
-
-minimum_cpu_frequency: 3.2GHz
-maximum_cpu_frequency: 3.2GHz
