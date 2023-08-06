@@ -46,3 +46,9 @@
     name: libcurl4-gnutls-dev:i386
     state: present
   when: not ansible_check_mode
+
+- name: Install gdb for debug
+  ansible.builtin.package:
+    name: gdb
+    state: present
+  when: not ansible_check_mode
