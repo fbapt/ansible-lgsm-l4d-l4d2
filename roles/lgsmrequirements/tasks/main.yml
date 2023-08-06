@@ -1,6 +1,6 @@
 ---
 - name: Load os specific variables
-  ansible.builtin.include_vars: "group_vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  ansible.builtin.include_vars: "defaults/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
 
 - name: Add contrib non free debian repository
   ansible.builtin.template:
@@ -43,6 +43,6 @@
 
 - name: Install libcurl to avoid steamcmd error libcurl.so cannot open shared object file No such file or directory
   ansible.builtin.package:
-    name: "{{ libcurls_packages }}"
+    name: libcurl4-gnutls-dev:i386
     state: present
   when: not ansible_check_mode
