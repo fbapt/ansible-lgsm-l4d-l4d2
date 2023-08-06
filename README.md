@@ -7,7 +7,7 @@
 As root user :
 
 ```bash
-apt-get install sudo openssh-client python3 python3-apt
+apt-get install sudo openssh-server python3 python3-apt
 nodeuser=example
 echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
 ip a
@@ -21,7 +21,7 @@ As root user install sudo for ansible user :
 
 ```bash
 adduser ansible
-apt-get install sudo whois python3 python3-apt python3-venv python3-full
+apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full
 echo ansible ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/ansible
 ```
 
@@ -72,9 +72,8 @@ git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
 Edit files :
 
 - inventory/lgsmhosts.yml
-- host_vars/production.yml
-- group_vars/Debian_XX.yml
-- vault.yml
+- host_vars/production/production.yml
+- host_vars/production/vault.yml
 - .vault_pass
 - Add l4d1/2 configuration files in each roles, examples :
 
