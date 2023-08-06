@@ -21,7 +21,7 @@ As root user install sudo for ansible user :
 
 ```bash
 adduser ansible
-apt-get install sudo whois python3 python3-apt python3-venv python3-full
+apt-get install sudo openssh-client whois python3 python3-apt python3-venv python3-full
 echo ansible ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/ansible
 ```
 
