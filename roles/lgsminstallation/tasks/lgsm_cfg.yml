@@ -2,12 +2,12 @@
 - name: Copy lgsm cfg files to remote game server
   ansible.builtin.copy:
     src: "files/{{ item.user }}/lgsm_cfg/"
-    dest: "{{ item.lgsm_config_path }}/{{ item.game_name }}/"
+    dest: "/home/{{ item.user }}/lgsm/config-lgsm/{{ item.game_name }}/"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
     mode: "0644"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "dest: {{ item.lgsm_config_path }}/{{ item.game_name }}/"
+    label: "dest: /home/{{ item.user }}/lgsm/config-lgsm/{{ item.game_name }}/"
   when: item.lgsm_cfg | bool
   tags: lgsm_cfg

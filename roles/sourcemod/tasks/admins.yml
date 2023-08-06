@@ -2,11 +2,11 @@
 - name: Configure admins cfg
   ansible.builtin.template:
     src: admins.cfg.j2
-    dest: "{{ item.path }}/addons/sourcemod/configs/admins.cfg"
+    dest: "/home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/sourcemod/configs/admins.cfg"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
     mode: "0644"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "dest: {{ item.path }}/addons/sourcemod/configs/admins.cfg"
+    label: "dest: /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/sourcemod/configs/admins.cfg"
   tags: admins

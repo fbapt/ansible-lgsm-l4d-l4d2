@@ -8,11 +8,11 @@
 
 - name: Check the currently installed version of Metamod Source
   ansible.builtin.command:
-    cmd: grep -qF {{ metamod_source_filename.content }} {{ item.path }}/addons/metamod/VERSION
+    cmd: grep -qF {{ metamod_source_filename.content }} /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/metamod/VERSION
   register: metamod_source_current
   loop: "{{ lgsm }}"
   loop_control:
-    label: "cmd: grep -qF {{ metamod_source_filename.content | default() }} {{ item.path }}/addons/metamod/VERSION"
+    label: "cmd: grep -qF {{ metamod_source_filename.content | default() }} /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/metamod/VERSION"
   changed_when: false
   failed_when: false
   when: not ansible_check_mode
@@ -35,13 +35,13 @@
       ansible.builtin.unarchive:
         remote_src: true
         src: "/home/{{ item.0.user }}/{{ metamod_source_filename.content }}"
-        dest: "{{ item.0.path }}"
+        dest: "/home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
         mode: "0755"
       loop: "{{ lgsm | zip(metamod_source_current.results) | list }}"
       loop_control:
-        label: "src: /home/{{ item.0.user }}/{{ metamod_source_filename.content | default() }} dest {{ item.0.path }}"
+        label: "src: /home/{{ item.0.user }}/{{ metamod_source_filename.content | default() }} dest /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
 
     - name: Remove the archive
       ansible.builtin.file:
@@ -53,34 +53,34 @@
 
     - name: Write the current metamod source version
       ansible.builtin.copy:
-        dest: "{{ item.0.path }}/addons/metamod/VERSION"
+        dest: "/home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/metamod/VERSION"
         content: "{{ metamod_source_filename.content }}"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
         mode: "0644"
       loop: "{{ lgsm | zip(metamod_source_current.results) | list }}"
       loop_control:
-        label: "dest: {{ item.0.path }}/addons/metamod/VERSION"
+        label: "dest: /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/metamod/VERSION"
 
 - name: Remove metamod_x64.vdf
   ansible.builtin.file:
-    path: "{{ item.path }}/addons/metamod_x64.vdf"
+    path: "/home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/metamod_x64.vdf"
     state: absent
   when: not ansible_check_mode
   loop: "{{ lgsm }}"
   loop_control:
-    label: "path: {{ item.path }}/addons/metamod_x64.vdf"
+    label: "path: /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/metamod_x64.vdf"
 
 - name: Create metamod.vdf
   ansible.builtin.template:
     src: metamod.vdf.j2
-    dest: "{{ item.path }}/addons/metamod.vdf"
+    dest: "/home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/metamod.vdf"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
     mode: "0644"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "dest: {{ item.path }}/addons/metamod.vdf"
+    label: "dest: /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/metamod.vdf"
 
 - name: Include tasks copy metamod plugins files
   ansible.builtin.include_tasks: metamod_plugins.yml

@@ -8,11 +8,11 @@
 
 - name: Check the currently installed version of Sourcemod
   ansible.builtin.command:
-    cmd: grep -qF {{ sourcemod_filename.content }} {{ item.path }}/addons/sourcemod/VERSION
+    cmd: grep -qF {{ sourcemod_filename.content }} /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/sourcemod/VERSION
   register: sourcemod_source_current
   loop: "{{ lgsm }}"
   loop_control:
-    label: "cmd: grep -qF {{ sourcemod_filename.content | default() }} {{ item.path }}/addons/sourcemod/VERSION"
+    label: "cmd: grep -qF {{ sourcemod_filename.content | default() }} /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/sourcemod/VERSION"
   changed_when: false
   failed_when: false
   when: not ansible_check_mode
@@ -35,13 +35,13 @@
       ansible.builtin.unarchive:
         remote_src: true
         src: "/home/{{ item.0.user }}/{{ sourcemod_filename.content }}"
-        dest: "{{ item.0.path }}"
+        dest: "/home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
         mode: "0755"
       loop: "{{ lgsm | zip(sourcemod_source_current.results) | list }}"
       loop_control:
-        label: "src: /home/{{ item.0.user }}/{{ sourcemod_filename.content | default() }} dest {{ item.0.path }}"
+        label: "src: /home/{{ item.0.user }}/{{ sourcemod_filename.content | default() }} dest /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
 
     - name: Remove the archive
       ansible.builtin.file:
@@ -53,14 +53,14 @@
 
     - name: Write the current Sourcemod version
       ansible.builtin.copy:
-        dest: "{{ item.0.path }}/addons/sourcemod/VERSION"
+        dest: "/home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/sourcemod/VERSION"
         content: "{{ sourcemod_filename.content }}"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
         mode: "0644"
       loop: "{{ lgsm | zip(sourcemod_source_current.results) | list }}"
       loop_control:
-        label: "dest: {{ item.0.path }}/addons/sourcemod/VERSION"
+        label: "dest: /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/sourcemod/VERSION"
 
 - name: Include task Configure admins
   ansible.builtin.include_tasks: admins.yml

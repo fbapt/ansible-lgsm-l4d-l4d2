@@ -1,10 +1,10 @@
 ---
 - name: Check the currently installed version of Stripper Source
   ansible.builtin.command:
-    cmd: grep -qF {{ stripper_source_filename }} "{{ item.path }}/addons/stripper/VERSION"
+    cmd: grep -qF {{ stripper_source_filename }} "/home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/stripper/VERSION"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "cmd: grep -qF {{ stripper_source_filename }} {{ item.path }}/addons/stripper/VERSION"
+    label: "cmd: grep -qF {{ stripper_source_filename }} /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/stripper/VERSION"
   register: strippersource_current
   changed_when: false
   failed_when: false
@@ -28,13 +28,13 @@
       ansible.builtin.unarchive:
         remote_src: true
         src: "/home/{{ item.0.user }}/{{ stripper_source_filename }}"
-        dest: "{{ item.0.path }}"
+        dest: "/home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
         mode: "0755"
       loop: "{{ lgsm | zip(strippersource_current.results) | list }}"
       loop_control:
-        label: "src: /home/{{ item.0.user }}/{{ stripper_source_filename }} dest {{ item.0.path }}"
+        label: "src: /home/{{ item.0.user }}/{{ stripper_source_filename }} dest /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
 
     - name: Remove the archive
       ansible.builtin.file:
@@ -46,14 +46,14 @@
 
     - name: Write the current Stripper Source version
       ansible.builtin.copy:
-        dest: "{{ item.0.path }}/addons/stripper/VERSION"
+        dest: "/home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/stripper/VERSION"
         content: "{{ stripper_source_filename }}"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
         mode: "0644"
       loop: "{{ lgsm | zip(strippersource_current.results) | list }}"
       loop_control:
-        label: "dest: {{ item.0.path }}/addons/stripper/VERSION"
+        label: "dest: /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/stripper/VERSION"
 
 - name: Include tasks copy stripper cfg files
   ansible.builtin.include_tasks: stripper_cfg.yml

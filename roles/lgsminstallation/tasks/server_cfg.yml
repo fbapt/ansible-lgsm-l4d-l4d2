@@ -2,12 +2,12 @@
 - name: Copy server cfg files to remote game server
   ansible.builtin.copy:
     src: "files/{{ item.user }}/server_cfg/"
-    dest: "{{ item.path }}/cfg/"
+    dest: "/home/{{ item.user }}/serverfiles/{{ item.directory }}/cfg/"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
     mode: "0644"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "dest: {{ item.path }}/cfg/"
+    label: "dest: /home/{{ item.user }}/serverfiles/{{ item.directory }}/cfg/"
   when: item.server_cfg | bool
   tags: server_cfg

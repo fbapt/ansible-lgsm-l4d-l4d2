@@ -2,12 +2,12 @@
 - name: Copy server files to remote game server
   ansible.builtin.copy:
     src: "files/{{ item.user }}/server/"
-    dest: "{{ item.path }}/"
+    dest: "/home/{{ item.user }}/serverfiles/{{ item.directory }}/"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
     mode: "0755"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "dest: {{ item.path }}/"
+    label: "dest: /home/{{ item.user }}/serverfiles/{{ item.directory }}/"
   when: item.serverfiles | bool
   tags: serverfiles

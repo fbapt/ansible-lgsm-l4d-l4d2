@@ -2,12 +2,12 @@
 - name: Copy maps files to remote game server
   ansible.builtin.copy:
     src: "files/{{ item.user }}/maps/"
-    dest: "{{ item.path }}/addons"
+    dest: "/home/{{ item.user }}/serverfiles/{{ item.directory }}/addons"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
     mode: "0644"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "src: {{ item.user }}/maps/ dest: {{ item.path }}/addons"
+    label: "src: {{ item.user }}/maps/ dest: /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons"
   when: item.maps | bool
   tags: maps
