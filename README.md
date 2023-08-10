@@ -42,7 +42,8 @@ As ansible user to create a virtual environment and install ansible packages :
 cd
 python3 -m venv venv
 echo "source $HOME/venv/bin/activate" | tee -a $HOME/.profile
-logout
+. $HOME/.profile
+pip install pip --upgrade
 pip install ansible ansible-core ansible-lint
 ```
 
