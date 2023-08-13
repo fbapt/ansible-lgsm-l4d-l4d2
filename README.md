@@ -15,7 +15,7 @@ ip a
 
 Copy ip of ansible nodes, it will necessary to ssh copy command for ansible controller.
 
-##  Preparing ssh connection on the controller :
+##  Preparing ssh connection on the ansible controller :
 
 As root user install sudo for ansible user :
 
