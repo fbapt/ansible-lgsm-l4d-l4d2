@@ -12,4 +12,4 @@ configure_iptables_ip:
     dest: /etc/iptables/rules.v6
 
 configure_iptables_ssh_port: 22
-configure_iptables_games_servers_ports: "27015, 27016"
+configure_iptables_games_servers_ports: 27015,27016
