@@ -143,7 +143,7 @@ reboot now
 
 ## About
 
-Playbooks have been tested with packages of ansible (8.2.0), ansible-core (2.15.2) and ansible-lint (6.17.2).
+Playbooks have been tested with packages of ansible (8.4.0), ansible-core (2.15.4) and ansible-lint (6.20.0).
 
 Tested on Debian 11 and 12
 
