@@ -1,7 +1,7 @@
 ---
 - name: Installation
   ansible.builtin.package:
-    name: "{{ iptables_dependencies }}"
+    name: "{{ configure_iptables_dependencies }}"
     state: present
 
 - name: Generate iptables config
@@ -11,7 +11,7 @@
     owner: root
     group: root
     mode: "0644"
-  loop: "{{ iptables_ip | dict2items }}"
+  loop: "{{ configure_iptables_ip | dict2items }}"
   notify: Restart ssh iptables or nftables
 
 - name: Enable iptables

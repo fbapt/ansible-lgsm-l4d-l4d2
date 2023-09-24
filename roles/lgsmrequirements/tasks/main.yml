@@ -37,7 +37,7 @@
 
 - name: Install lgsm dependencies
   ansible.builtin.package:
-    name: "{{ lgsm_dependencies }}"
+    name: "{{ lgsmrequirements_lgsm_dependencies }}"
     state: present
   when: not ansible_check_mode
 

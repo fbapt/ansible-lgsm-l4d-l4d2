@@ -1,5 +1,6 @@
 ---
 - name: Copy server files to remote game server
+  become: true
   ansible.builtin.copy:
     src: "files/{{ item.user }}/server/"
     dest: "/home/{{ item.user }}/serverfiles/{{ item.directory }}/"

@@ -1,19 +1,21 @@
 ---
 - name: Download lgsm
+  become: true
   ansible.builtin.get_url:
-    url: "{{ lgsm_url_script }}"
-    dest: "/home/{{ item.user }}/{{ lgsm_script }}"
+    url: "{{ lgsminstallation_lgsm_url_script }}"
+    dest: "/home/{{ item.user }}/{{ lgsminstallation_lgsm_script }}"
     mode: "0755"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "url: {{ lgsm_url_script }} dest: /home/{{ item.user }}/{{ lgsm_script }}"
+    label: "url: {{ lgsminstallation_lgsm_url_script }} dest: /home/{{ item.user }}/{{ lgsminstallation_lgsm_script }}"
   when: not ansible_check_mode
 
 - name: Create script for a game server
+  become: true
   become_user: "{{ item.user }}"
-  ansible.builtin.shell: "/home/{{ item.user }}/{{ lgsm_script }} {{ item.game_name }}"
+  ansible.builtin.shell: "/home/{{ item.user }}/{{ lgsminstallation_lgsm_script }} {{ item.game_name }}"
   args:
     chdir: "/home/{{ item.user }}"
     creates: "/home/{{ item.user }}/{{ item.game_name }}"
@@ -24,6 +26,7 @@
   when: not ansible_check_mode
 
 - name: Download and installation of game server
+  become: true
   become_user: "{{ item.user }}"
   ansible.builtin.shell: "/home/{{ item.user }}/{{ item.game_name }} auto-install"
   args:

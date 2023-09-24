@@ -1,5 +1,6 @@
 ---
 - name: Copy server cfg files to remote game server
+  become: true
   ansible.builtin.copy:
     src: "files/{{ item.user }}/server_cfg/"
     dest: "/home/{{ item.user }}/serverfiles/{{ item.directory }}/cfg/"

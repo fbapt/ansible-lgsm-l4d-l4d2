@@ -1,5 +1,6 @@
 ---
 - name: Crontab config at reboot
+  become: true
   ansible.builtin.cron:
     name: "{{ item.1.name }}"
     user: "{{ item.0.user }}"
@@ -15,6 +16,7 @@
   tags: crontab
 
 - name: Crontab config
+  become: true
   ansible.builtin.cron:
     name: "{{ item.1.name }}"
     user: "{{ item.0.user }}"

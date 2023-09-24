@@ -105,9 +105,11 @@ lgsm:
         weekday: "*"
         command: "restart"
 
-steamcmd_locales_secondary: fr_FR.UTF-8 UTF-8
+lgsmuser_steamcmd_locales_secondary: fr_FR.UTF-8 UTF-8
 
-iptables_games_servers_ports: 27015,27016
-ssh_port: 5976
-ssh_authenticationmethods: publickey
-nftables_games_servers_ports: "27015, 27016"
+configure_iptables_games_servers_ports: 27015,27016
+configure_iptables_ssh_port: 5976
+configure_ssh_port: 5976
+configure_ssh_authenticationmethods: publickey
+configure_nftables_games_servers_ports: "27015, 27016"
+configure_nftables_ssh_port: 5976

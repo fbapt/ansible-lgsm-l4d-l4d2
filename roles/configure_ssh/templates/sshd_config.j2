@@ -12,7 +12,7 @@
 
 Include /etc/ssh/sshd_config.d/*.conf
 
-Port {{ ssh_port }}
+Port {{ configure_ssh_port }}
 AddressFamily inet
 #ListenAddress 0.0.0.0
 #ListenAddress ::
@@ -32,7 +32,7 @@ LogLevel VERBOSE
 
 LoginGraceTime 30
 PermitRootLogin no
-AuthenticationMethods {{ ssh_authenticationmethods }}
+AuthenticationMethods {{ configure_ssh_authenticationmethods }}
 StrictModes yes
 MaxAuthTries 3
 #MaxSessions 10

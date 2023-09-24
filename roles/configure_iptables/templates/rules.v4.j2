@@ -12,20 +12,20 @@
 -A INPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 # SSH port
--A INPUT -p tcp -m tcp --dport {{ ssh_port }} -j ACCEPT
+-A INPUT -p tcp -m tcp --dport {{ configure_iptables_ssh_port }} -j ACCEPT
 
 # Games servers ports
--A INPUT -p udp -m multiport --dports {{ iptables_games_servers_ports }} -j ACCEPT
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -j ACCEPT
 
 # Protect a game server by including rate-limit incoming connections
--A INPUT -p udp -m multiport --dports {{ iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --mask 255.255.255.255 --rsource
--A INPUT -p udp -m multiport --dports {{ iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name DEFAULT --mask 255.255.255.255 --rsource -j DROP
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --mask 255.255.255.255 --rsource
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name DEFAULT --mask 255.255.255.255 --rsource -j DROP
 
 # Protection against certains packets
--A INPUT -p udp -m multiport --dports {{ iptables_games_servers_ports }} -m length --length 0:28 -j DROP
--A INPUT -p udp -m multiport --dports {{ iptables_games_servers_ports }} -m length --length 30:32 -j DROP
--A INPUT -p udp -m multiport --dports {{ iptables_games_servers_ports }} -m length --length 46 -j DROP
--A INPUT -p udp -m multiport --dports {{ iptables_games_servers_ports }} -m length --length 60 -j DROP
--A INPUT -p udp -m multiport --dports {{ iptables_games_servers_ports }} -m length --length 2521:65535 -j DROP
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 0:28 -j DROP
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 30:32 -j DROP
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 46 -j DROP
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 60 -j DROP
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 2521:65535 -j DROP
 
 COMMIT

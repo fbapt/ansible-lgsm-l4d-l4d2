@@ -1,7 +1,7 @@
 ---
 - name: Remove iptables
   ansible.builtin.package:
-    name: "{{ iptables_dependencies }}"
+    name: "{{ configure_nftables_iptables_dependencies }}"
     state: absent
   notify: Restart ssh iptables or nftables
 

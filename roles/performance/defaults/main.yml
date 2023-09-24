@@ -1,5 +1,5 @@
 ---
-useful_packages:
+performance_useful_packages:
   - tuned
   - dmidecode
   - lm-sensors
@@ -12,6 +12,6 @@ useful_packages:
   - dnsutils
   - neofetch
 
-crontab_reboot:
+performance_crontab_reboot:
   - name: "Disable hyperthreading"
     job: echo d | /root/toggleHT.sh

@@ -1,10 +1,10 @@
 ---
 - name: Check the currently installed version of Stripper Source
   ansible.builtin.command:
-    cmd: grep -qF {{ stripper_source_filename }} "/home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/stripper/VERSION"
+    cmd: grep -qF {{ strippersource_filename }} "/home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/stripper/VERSION"
   loop: "{{ lgsm }}"
   loop_control:
-    label: "cmd: grep -qF {{ stripper_source_filename }} /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/stripper/VERSION"
+    label: "cmd: grep -qF {{ strippersource_filename }} /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/stripper/VERSION"
   register: strippersource_current
   changed_when: false
   failed_when: false
@@ -15,39 +15,39 @@
   block:
     - name: Download the requested version
       ansible.builtin.get_url:
-        url: "{{ stripper_source_url }}/{{ stripper_source_filename }}"
+        url: "{{ strippersource_url }}/{{ strippersource_filename }}"
         dest: "/home/{{ item.0.user }}"
         mode: "0755"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
       loop: "{{ lgsm | zip(strippersource_current.results) | list }}"
       loop_control:
-        label: "url: {{ stripper_source_url }}/{{ stripper_source_filename }} dest: /home/{{ item.0.user }}"
+        label: "url: {{ strippersource_url }}/{{ strippersource_filename }} dest: /home/{{ item.0.user }}"
 
     - name: Extract the downloaded file
       ansible.builtin.unarchive:
         remote_src: true
-        src: "/home/{{ item.0.user }}/{{ stripper_source_filename }}"
+        src: "/home/{{ item.0.user }}/{{ strippersource_filename }}"
         dest: "/home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
         mode: "0755"
       loop: "{{ lgsm | zip(strippersource_current.results) | list }}"
       loop_control:
-        label: "src: /home/{{ item.0.user }}/{{ stripper_source_filename }} dest /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
+        label: "src: /home/{{ item.0.user }}/{{ strippersource_filename }} dest /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}"
 
     - name: Remove the archive
       ansible.builtin.file:
-        path: "/home/{{ item.0.user }}/{{ stripper_source_filename }}"
+        path: "/home/{{ item.0.user }}/{{ strippersource_filename }}"
         state: absent
       loop: "{{ lgsm | zip(strippersource_current.results) | list }}"
       loop_control:
-        label: "path: /home/{{ item.0.user }}/{{ stripper_source_filename }}"
+        label: "path: /home/{{ item.0.user }}/{{ strippersource_filename }}"
 
     - name: Write the current Stripper Source version
       ansible.builtin.copy:
         dest: "/home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/stripper/VERSION"
-        content: "{{ stripper_source_filename }}"
+        content: "{{ strippersource_filename }}"
         owner: "{{ item.0.user }}"
         group: "{{ item.0.user }}"
         mode: "0644"

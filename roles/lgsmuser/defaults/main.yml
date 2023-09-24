@@ -1,5 +1,5 @@
 ---
-limit_type: soft
-limit_item: nofile
-limit_value: "16384"
-steamcmd_locales_secondary: fr_FR.UTF-8 UTF-8
+lgsmuser_limit_type: soft
+lgsmuser_limit_item: nofile
+lgsmuser_limit_value: "16384"
+lgsmuser_steamcmd_locales_secondary: fr_FR.UTF-8 UTF-8

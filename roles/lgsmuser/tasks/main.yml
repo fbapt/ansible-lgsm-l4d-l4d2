@@ -21,16 +21,16 @@
 - name: Add or modify user limits for steamcmd
   community.general.pam_limits:
     domain: "{{ item.user }}"
-    limit_type: "{{ limit_type }}"
-    limit_item: "{{ limit_item }}"
-    value: "{{ limit_value }}"
+    limit_type: "{{ lgsmuser_limit_type }}"
+    limit_item: "{{ lgsmuser_limit_item }}"
+    value: "{{ lgsmuser_limit_value }}"
     comment: fix openfiles for steamcmd
   loop: "{{ lgsm }}"
   loop_control:
     label: "domain: {{ item.user }}
-      limit_type: {{ limit_type }}
-      limit_item: {{ limit_item }}
-      value: {{ limit_value }}
+      limit_type: {{ lgsmuser_limit_type }}
+      limit_item: {{ lgsmuser_limit_item }}
+      value: {{ lgsmuser_limit_value }}
       comment: fix openfiles for steamcmd"
 
 - name: Add ld library path in user .profile to fix ldd shared library not found for l4d games
@@ -64,7 +64,7 @@
   ansible.builtin.debconf:
     name: locales
     question: locales/locales_to_be_generated
-    value: "en_US.UTF-8 UTF-8, {{ steamcmd_locales_secondary }}"
+    value: "en_US.UTF-8 UTF-8, {{ lgsmuser_steamcmd_locales_secondary }}"
     vtype: multiselect
 
 - name: Add lang us utf8 in user .profile for steamcmd

@@ -1,9 +1,9 @@
 ---
-iptables_dependencies:
+configure_iptables_dependencies:
   - iptables
   - iptables-persistent
 
-iptables_ip:
+configure_iptables_ip:
   v4:
     src: rules.v4.j2
     dest: /etc/iptables/rules.v4
@@ -11,5 +11,5 @@ iptables_ip:
     src: rules.v6.j2
     dest: /etc/iptables/rules.v6
 
-ssh_port: 22
-nftables_games_servers_ports: "27015, 27016"
+configure_iptables_ssh_port: 22
+configure_iptables_games_servers_ports: "27015, 27016"

@@ -1,5 +1,5 @@
 ---
-lgsm_dependencies:
+lgsmrequirements_lgsm_dependencies:
   - steamcmd
   - bc
   - binutils
@@ -25,8 +25,8 @@ lgsm_dependencies:
   - wget
   - xz-utils
 
-contrib: contrib
-nonfree: non-free
-nonfreefirmware: non-free-firmware
-url_deb: http://deb.debian.org/debian/
-url_deb_secu: http://security.debian.org/debian-security
+lgsmrequirements_contrib: contrib
+lgsmrequirements_nonfree: non-free
+lgsmrequirements_nonfreefirmware: non-free-firmware
+lgsmrequirements_url_deb: http://deb.debian.org/debian/
+lgsmrequirements_url_deb_secu: http://security.debian.org/debian-security

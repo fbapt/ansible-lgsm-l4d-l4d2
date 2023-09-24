@@ -1,7 +1,7 @@
 ---
 - name: Install useful packages
   ansible.builtin.package:
-    name: "{{ useful_packages }}"
+    name: "{{ performance_useful_packages }}"
     state: present
   when: not ansible_check_mode
 
@@ -49,7 +49,7 @@
     special_time: reboot
     job: "sleep 30 && {{ item.job }}"
     state: present
-  loop: "{{ crontab_reboot }}"
+  loop: "{{ performance_crontab_reboot }}"
   loop_control:
     label: "Name: {{ item.name }}
       User: root
