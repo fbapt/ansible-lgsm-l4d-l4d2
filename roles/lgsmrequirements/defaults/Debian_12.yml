@@ -22,6 +22,7 @@ lgsmrequirements_lgsm_dependencies:
   - tmux
   - unzip
   - util-linux
+  - uuid-runtime
   - wget
   - xz-utils
 
