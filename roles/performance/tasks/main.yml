@@ -42,7 +42,16 @@
     group: root
     mode: "0755"
 
-- name: Crontab disable hyperthreading
+- name: Get physical interface name
+  ansible.builtin.shell: |
+    set -o pipefail
+    ip -br l | awk '$1 !~ "lo|vir|wl" { print $1}'
+  args:
+    executable: /usr/bin/bash
+  register: physical_interface
+  changed_when: false
+
+- name: Crontab configuration
   ansible.builtin.cron:
     name: "{{ item.name }}"
     user: root
