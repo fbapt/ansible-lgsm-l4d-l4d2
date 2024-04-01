@@ -1,9 +1,60 @@
-*filter
+*mangle
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
 
-# Disallow INPUT/FORWARD as the default filter policy
+# Drop invalid packets
+-A PREROUTING -m conntrack --ctstate INVALID -j DROP
+
+# Drop TCP packets that are new and are not SYN
+-A PREROUTING -p tcp -m tcp ! --tcp-flags FIN,SYN,RST,ACK SYN -m conntrack --ctstate NEW -j DROP
+
+# Drop SYN packets with suspicious MSS value
+-A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
+
+# Block packets with bogus TCP flags
+-A PREROUTING -p tcp -m tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+-A PREROUTING -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
+-A PREROUTING -p tcp -m tcp --tcp-flags FIN,RST FIN,RST -j DROP
+-A PREROUTING -p tcp -m tcp --tcp-flags FIN,ACK FIN -j DROP
+-A PREROUTING -p tcp -m tcp --tcp-flags ACK,URG URG -j DROP
+-A PREROUTING -p tcp -m tcp --tcp-flags PSH,ACK PSH -j DROP
+-A PREROUTING -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+
+# Limit icmp
+-A PREROUTING -p icmp -m hashlimit --hashlimit-upto 3/sec --hashlimit-burst 5 --hashlimit-mode srcip --hashlimit-name icmp -j ACCEPT
+
+# Drop fragments in all chains
+-A PREROUTING -f -j DROP
+COMMIT
+
+*raw
+:PREROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Protecting Against UDP Attacks
+-A PREROUTING -p udp -m hashlimit --hashlimit-upto 50/sec --hashlimit-burst 5 --hashlimit-mode srcip,dstport --hashlimit-name periplimit --hashlimit-htable-expire 300000 -j ACCEPT
+-A PREROUTING -p udp -j DROP
+COMMIT
+
+*filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
+:UDP_ESTABLISHED_LIMIT - [0:0]
+:UDP_NEW_LIMIT - [0:0]
+:UDP_NEW_LIMIT_GLOBAL - [0:0]
+:port-scanning - [0:0]
+
+# Create Rules L4D
+-A UDP_ESTABLISHED_LIMIT -m hashlimit --hashlimit-upto 40/sec --hashlimit-burst 60 --hashlimit-mode srcip,srcport,dstport --hashlimit-name ESTABLISHED_HASHLIMIT -j ACCEPT
+-A UDP_ESTABLISHED_LIMIT -j DROP
+-A UDP_NEW_LIMIT -m hashlimit --hashlimit-upto 1/sec --hashlimit-burst 3 --hashlimit-mode srcip,dstport --hashlimit-name NEW_HASHLIMIT --hashlimit-htable-expire 5000 -j UDP_NEW_LIMIT_GLOBAL
+-A UDP_NEW_LIMIT -j DROP
+-A UDP_NEW_LIMIT_GLOBAL -m hashlimit --hashlimit-upto 10/sec --hashlimit-burst 20 --hashlimit-mode dstport --hashlimit-name NEW_HASHLIMIT_GLOBAL --hashlimit-htable-expire 5000 -j ACCEPT
+-A UDP_NEW_LIMIT_GLOBAL -j DROP
 
 # Allow internal traffic on the loopback device
 -A INPUT -i lo -j ACCEPT
@@ -20,6 +71,8 @@
 # Protect a game server by including rate-limit incoming connections
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --mask 255.255.255.255 --rsource
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name DEFAULT --mask 255.255.255.255 --rsource -j DROP
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -j UDP_NEW_LIMIT
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate ESTABLISHED -j UDP_ESTABLISHED_LIMIT
 
 # Protection against certains packets
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 0:28 -j DROP
@@ -28,4 +81,26 @@
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 60 -j DROP
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 2521:65535 -j DROP
 
+# Drop invalid packets
+-A INPUT -m conntrack --ctstate INVALID -j DROP
+
+# Limit connections per source IP
+-A INPUT -p tcp -m connlimit --connlimit-above 150 --connlimit-mask 32 --connlimit-saddr -j REJECT --reject-with tcp-reset
+
+# Limit RST packets
+-A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/sec --limit-burst 2 -j ACCEPT
+-A INPUT -p tcp -m tcp --tcp-flags RST RST -j DROP
+
+# Limit new TCP connections per second per source IP
+-A INPUT -p tcp -m conntrack --ctstate NEW -m limit --limit 60/sec --limit-burst 20 -j ACCEPT
+-A INPUT -p tcp -m conntrack --ctstate NEW -j DROP
+
+# SSH brute-force protection
+-A INPUT -p tcp -m tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --mask 255.255.255.255 --rsource
+-A INPUT -p tcp -m tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name DEFAULT --mask 255.255.255.255 --rsource -j DROP
+-A INPUT -p tcp -m tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m hashlimit --hashlimit-upto 2/sec --hashlimit-burst 5 --hashlimit-mode dstport --hashlimit-name SSHPROTECT -j ACCEPT
+
+# Protection against port scanning
+-A port-scanning -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK RST -m limit --limit 1/sec --limit-burst 2 -j RETURN
+-A port-scanning -j DROP
 COMMIT

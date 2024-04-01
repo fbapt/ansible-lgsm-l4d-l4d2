@@ -2,36 +2,115 @@
 
 flush ruleset
 
+table ip mangle {
+        chain PREROUTING {
+                type filter hook prerouting priority mangle; policy accept;
+                ct state invalid counter drop
+                tcp flags != syn / fin,syn,rst,ack ct state new counter drop
+                meta l4proto tcp ct state new tcp option maxseg size != 536-65535 counter drop
+                tcp flags fin,syn / fin,syn counter drop
+                tcp flags syn,rst / syn,rst counter drop
+                tcp flags fin,rst / fin,rst counter drop
+                tcp flags fin / fin,ack counter drop
+                tcp flags urg / ack,urg counter drop
+                tcp flags psh / psh,ack counter drop
+                tcp flags ! fin,syn,rst,psh,ack,urg counter drop
+                meta l4proto icmp meter { ip saddr limit rate 3/second } counter accept
+                ip frag-off & 8191 != 0 counter drop
+        }
+
+        chain INPUT {
+                type filter hook input priority mangle; policy accept;
+        }
+
+        chain FORWARD {
+                type filter hook forward priority mangle; policy accept;
+        }
+
+        chain OUTPUT {
+                type route hook output priority mangle; policy accept;
+        }
+
+        chain POSTROUTING {
+                type filter hook postrouting priority mangle; policy accept;
+        }
+}
+
+table ip raw {
+        chain PREROUTING {
+                type filter hook prerouting priority raw; policy accept;
+                meta l4proto udp meter periplimit { tcp dport . ip saddr timeout 300s limit rate 50/second } counter accept
+                meta l4proto udp counter drop
+        }
+
+        chain OUTPUT {
+                type filter hook output priority raw; policy accept;
+        }
+}
+
 table ip filter {
         chain INPUT {
                 # Disallow everything as the default filter policy
                 type filter hook input priority filter; policy drop;
                 # Allow internal traffic on the loopback device
-                iifname "lo" accept
+                iifname "lo" counter accept
                 # Accepts all established inbound connections
-                ct state established accept
+                ct state established counter accept
                 # SSH port
-                meta l4proto { tcp } th dport {{ configure_nftables_ssh_port }} accept
+                meta l4proto { tcp } th dport {{ configure_nftables_ssh_port }} counter accept
                 # Games servers ports
-                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } accept
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } counter accept
                 # Protect a game server by including rate-limit incoming connections
-                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } ct state new meter DEFAULT size 65535 { ip saddr limit rate over 2/minute burst 10 packets } drop
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } ct state new meter DEFAULT size 65535 { ip saddr limit rate over 1/minute burst 10 packets } counter drop
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } ct state new counter jump UDP_NEW_LIMIT
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } ct state established counter jump UDP_ESTABLISHED_LIMIT
                 # Protection against packets
-                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 0-28 drop
-                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 30-32 drop
-                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 46 drop
-                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 60 drop
-                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 2521-65535 drop
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 0-28 counter drop
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 30-32 counter drop
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 46 counter drop
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 60 counter drop
+                meta l4proto { udp } th dport { {{ configure_nftables_games_servers_ports }} } meta length 2521-65535 counter drop
+                # Drop invalid packets
+                ct state invalid counter drop
+                # Limit connections per source IP
+                meta l4proto tcp xt match connlimit counter reject with tcp reset
+                # Limit RST packets
+                tcp flags & rst == rst limit rate 2/second burst 2 packets counter accept
+                tcp flags & rst == rst counter drop
+                # Limit new TCP connections per second per source IP
+                meta l4proto tcp ct state new limit rate 60/second burst 20 packets counter accept
+                meta l4proto tcp ct state new counter drop
+                # SSH brute-force protection
+                meta l4proto { tcp } th dport {{ configure_nftables_ssh_port }} ct state new meter DEFAULT size 65535 { ip saddr limit rate over 1/minute burst 10 packets } counter drop
+                tcp dport 9946 ct state new meter SSHPROTECT { tcp dport limit rate 2/second } counter accept
         }
 
         chain FORWARD {
-                # Disallow everything as the default filter policy
                 type filter hook forward priority filter; policy drop;
         }
 
         chain OUTPUT {
-                # Allow everything as the default filter policy
                 type filter hook output priority filter; policy accept;
+        }
+        # Create Rules L4D
+        chain UDP_ESTABLISHED_LIMIT {
+                meter ESTABLISHED_HASHLIMIT { udp dport . ip saddr . tcp sport limit rate 40/second burst 60 packets } counter accept
+                counter drop
+        }
+
+        chain UDP_NEW_LIMIT {
+                meter NEW_HASHLIMIT { udp dport . ip saddr timeout 5s limit rate 1/second burst 3 packets } counter jump UDP_NEW_LIMIT_GLOBAL
+                counter drop
+        }
+
+        chain UDP_NEW_LIMIT_GLOBAL {
+                meter NEW_HASHLIMIT_GLOBAL { udp dport timeout 5s limit rate 10/second burst 20 packets } counter accept
+                counter drop
+        }
+        # Protection against port scanning
+        chain port-scanning {
+                tcp flags rst / fin,syn,rst,ack limit rate 1/second burst 2 packets counter return
+                counter drop
         }
 }
 table ip6 filter {
