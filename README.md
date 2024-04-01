@@ -119,7 +119,7 @@ ansible-playbook --limit production system_update.yml
 ansible-playbook --limit production lgsm.yml
 ```
 
-(optional) If you need to configure firewall nftables or iptables with a harden ssh :
+(optional) If you need to configure firewall with a harden ssh :
 
 Run iptables playbook
 
