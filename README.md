@@ -150,9 +150,7 @@ Edit files :
 
 ## 2/ Installation of left4dead1 and/or left4dead2 dedicated servers
 
-# On the ansible controller
-
-As ansible user :
+On the ansible controller, as ansible user :
 
 Run the playbooks to install left4dead1 and/or left4dead2 dedicated servers on a Debian 11 or 12 :
 
