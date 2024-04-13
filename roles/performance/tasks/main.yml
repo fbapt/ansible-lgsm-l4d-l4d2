@@ -1,4 +1,19 @@
 ---
+- name: Installation virt-what
+  ansible.builtin.package:
+    name: virt-what
+    state: present
+  when: not ansible_check_mode
+
+- name: Check if is a dedicated or vm server
+  ansible.builtin.shell: |
+    set -o pipefail
+    virt-what
+  args:
+    executable: /usr/bin/bash
+  changed_when: false
+  register: physical
+
 - name: Install useful packages
   ansible.builtin.package:
     name: "{{ performance_useful_packages }}"
@@ -15,6 +30,13 @@
   ansible.builtin.command:
     cmd: tuned-adm profile network-latency
   changed_when: false
+  when: physical.stdout == ""
+
+- name: Tuned-adm profile virtual-guest
+  ansible.builtin.command:
+    cmd: tuned-adm profile virtual-guest
+  changed_when: false
+  when: physical.stdout != ""
 
 - name: Grub disable mitigations
   ansible.builtin.copy:
@@ -25,6 +47,7 @@
     mode: "0644"
     backup: true
   notify: Update-grub
+  when: physical.stdout == ""
 
 - name: Copy systctl config
   ansible.builtin.copy:
@@ -41,6 +64,7 @@
     owner: root
     group: root
     mode: "0755"
+  when: physical.stdout == ""
 
 - name: Get physical interface name
   ansible.builtin.shell: |
@@ -51,16 +75,19 @@
   register: physical_interface
   changed_when: false
 
-- name: Crontab configuration
+- name: Crontab configuration hyperthreading
   ansible.builtin.cron:
-    name: "{{ item.name }}"
+    name: Disable hyperthreading
     user: root
     special_time: reboot
-    job: "sleep 30 && {{ item.job }}"
+    job: "sleep 30 && echo d | /root/toggleHT.sh"
     state: present
-  loop: "{{ performance_crontab_reboot }}"
-  loop_control:
-    label: "Name: {{ item.name }}
-      User: root
-      Special_time: reboot
-      job: sleep 30 && {{ item.job }}"
+  when: physical.stdout == ""
+
+- name: Crontab configuration udp performance
+  ansible.builtin.cron:
+    name: Enable udp gro forwarding to improve udp performance
+    user: root
+    special_time: reboot
+    job: "sleep 30 && ethtool -K {{ physical_interface.stdout }} rx-udp-gro-forwarding on"
+    state: present

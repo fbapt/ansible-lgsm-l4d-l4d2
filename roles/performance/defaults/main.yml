@@ -11,9 +11,3 @@ performance_useful_packages:
   - strace
   - dnsutils
   - neofetch
-
-performance_crontab_reboot:
-  - name: "Disable hyperthreading"
-    job: echo d | /root/toggleHT.sh
-  - name: "Enable udp gro forwarding to improve udp performance"
-    job: ethtool -K {{ physical_interface.stdout }} rx-udp-gro-forwarding on

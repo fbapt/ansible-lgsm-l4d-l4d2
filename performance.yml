@@ -3,4 +3,4 @@
   hosts: lgsmhosts
   become: true
   roles:
-    - { role: performance, tags: performance, when: ansible_product_name != ('VirtualBox' or 'VMware Virtual Platform') }
+    - { role: performance, tags: performance }
