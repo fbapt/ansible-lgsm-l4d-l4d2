@@ -89,7 +89,7 @@ ssh-copy-id ${nodeuser}@${nodeip}
 
 Download repository
 
-https://github.com/fbapt/ansible-lgsm-l4d-l4d2/releases
+git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2/releases
 
 If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
 
