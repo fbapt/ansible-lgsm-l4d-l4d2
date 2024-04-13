@@ -5,21 +5,43 @@
 # Exemple of a basic ansible configuration
 
 ## 1/ On the ansible controller
-### Preparing requirements package / NOPASSWD sudo for ansible user / python env for ansible package
 
 As root user :
+
+Create a user ansible :
 
 ```bash
 controlleruser=ansible
 adduser "${controlleruser}"
+```
+
+Install requirements packages :
+
+```bash
 apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full
+```
+
+Add NOPASSWD sudo :
+
+```bash
 echo "${controlleruser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${controlleruser}"
+```
+
+Install ansible package with python3 environnement as ansible user :
+
+```bash
 su - "${controlleruser}"
 python3 -m venv venv
 echo "source ~/venv/bin/activate" | tee -a ~/.profile
 source ~/venv/bin/activate
 pip install pip --upgrade
 pip install ansible ansible-core ansible-lint
+```
+
+Generate a ssh key as ansible user :
+
+```bash
+ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')"
 ```
 
 ## 2/ On each ansible nodes
@@ -39,19 +61,11 @@ Save ip of each ansible nodes.
 
 ## 3/ On the ansible controller
 
-As ansible user :
-
-Generate a ssh key
-
-```bash
-ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')"
-```
-
-Copy ssh key with user and ip each ansible nodes :
+As ansible user, copy ssh key with user and ip of each ansible nodes :
 
 ```bash
 nodeip=x.x.x.x
-nodeuser=example
+nodeuser=ansible
 ssh-copy-id ${nodeuser}@${nodeip}
 ```
 
@@ -120,7 +134,9 @@ Edit files :
 
 ## 2/ Installation of left4dead1 and/or left4dead2 dedicated servers
 
-As ansible user on the ansible controller :
+# On the ansible controller
+
+As ansible user :
 
 Run the playbooks to install left4dead1 and/or left4dead2 dedicated servers on a Debian 11 or 12 :
 
