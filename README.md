@@ -2,49 +2,55 @@
 
 > :warning: You need to have some experience with Ansible and left4dead games before using this repo !
 
-## Preparing ssh connection on ansible nodes :
+## 1/ On the ansible controller
+### Preparing requirements package / NOPASSWD sudo for ansible user / python env for ansible package
 
 As root user :
 
 ```bash
+controlleruser=ansible
+adduser "${controlleruser}"
+apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full
+echo "${controlleruser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${controlleruser}"
+su - "${controlleruser}"
+python3 -m venv venv
+echo "source ~/venv/bin/activate" | tee -a ~/.profile
+source ~/venv/bin/activate
+pip install pip --upgrade
+pip install ansible ansible-core ansible-lint
+```
+
+## 2/ On each ansible nodes
+### Preparing requirements package / NOPASSWD sudo for a user / ip of each nodes
+
+As root user :
+
+```bash
+nodeuser=ansible
+adduser "${nodeuser}"
 apt-get install sudo openssh-server python3 python3-apt
-nodeuser=example
 echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
 ip a
 ```
 
-Copy ip of ansible nodes, it will necessary to ssh copy command for ansible controller.
+Save ip of each ansible nodes.
 
-##  Preparing ssh connection on the ansible controller :
+## 3/ On the ansible controller
 
-As root user install sudo for ansible user :
+As ansible user :
 
-```bash
-adduser ansible
-apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full
-echo ansible ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/ansible
-```
-
-As ansible user copy ssh key each ansible nodes :
+Generate a ssh key
 
 ```bash
 ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')"
+```
+
+Copy ssh key with user and ip each ansible nodes :
+
+```bash
 nodeip=x.x.x.x
 nodeuser=example
 ssh-copy-id ${nodeuser}@${nodeip}
-```
-
-##  Installing packages on the ansible controller :
-
-As ansible user to create a virtual environment and install ansible packages :
-
-```bash
-cd
-python3 -m venv venv
-echo "source $HOME/venv/bin/activate" | tee -a $HOME/.profile
-. $HOME/.profile
-pip install pip --upgrade
-pip install ansible ansible-core ansible-lint
 ```
 
 If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
@@ -64,7 +70,7 @@ If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/se
 
 ##  Configure files of left4dead1 and/or left4dead2
 
-Get repository
+Download repository
 
 https://github.com/fbapt/ansible-lgsm-l4d-l4d2/releases
 
