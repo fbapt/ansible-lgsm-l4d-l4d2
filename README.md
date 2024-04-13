@@ -63,6 +63,21 @@ Download repository
 
 https://github.com/fbapt/ansible-lgsm-l4d-l4d2/releases
 
+If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
+
+```bash
+    ..........,
+	"terminal.integrated.shellArgs.linux": ["-l"],
+	"terminal.integrated.defaultProfile.linux": "bash",
+	"terminal.integrated.profiles.linux": {
+	  "bash": {
+		"path": "/bin/bash",
+		"icon": "terminal-bash",
+		"args": [ "-l" ]
+	  },
+	}
+```
+
 Edit files :
 
 - inventory/lgsmhosts.yml
@@ -143,18 +158,3 @@ https://docs.linuxgsm.com/
 https://linuxgsm.com/servers/l4dserver/
 
 https://linuxgsm.com/servers/l4d2server/
-
-If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
-
-```bash
-    ..........,
-	"terminal.integrated.shellArgs.linux": ["-l"],
-	"terminal.integrated.defaultProfile.linux": "bash",
-	"terminal.integrated.profiles.linux": {
-	  "bash": {
-		"path": "/bin/bash",
-		"icon": "terminal-bash",
-		"args": [ "-l" ]
-	  },
-	}
-```
