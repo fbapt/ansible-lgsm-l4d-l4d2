@@ -188,3 +188,7 @@ https://docs.linuxgsm.com/
 https://linuxgsm.com/servers/l4dserver/
 
 https://linuxgsm.com/servers/l4d2server/
+
+Ansible :
+
+[https://www.ansible.com/](https://docs.ansible.com/ansible/latest/getting_started/index.html)
