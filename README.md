@@ -45,19 +45,33 @@ ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')"
 ```
 
 ## 2/ On each ansible nodes
-### Preparing requirements package / NOPASSWD sudo for a user / ip of each nodes
 
 As root user :
 
+Create a user ansible :
+
 ```bash
 nodeuser=ansible
-adduser "${nodeuser}"
-apt-get install sudo openssh-server python3 python3-apt
-echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
-ip a
+adduser "${nodeuser}
 ```
 
-Save ip of each ansible nodes.
+Install requirements package :
+
+```bash
+apt-get install sudo openssh-server python3 python3-apt
+```
+
+Add NOPASSWD sudo :
+
+```bash
+echo "${controlleruser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${controlleruser}"
+```
+
+Save ip of each ansible nodes :
+
+```bash
+ip a
+```
 
 ## 3/ On the ansible controller
 
