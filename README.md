@@ -2,6 +2,8 @@
 
 > :warning: You need to have some experience with Ansible and left4dead games before using this repo !
 
+# Exemple of a basic ansible configuration
+
 ## 1/ On the ansible controller
 ### Preparing requirements package / NOPASSWD sudo for ansible user / python env for ansible package
 
@@ -53,22 +55,9 @@ nodeuser=example
 ssh-copy-id ${nodeuser}@${nodeip}
 ```
 
-If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
+# Configuration and installation
 
-```bash
-    ..........,
-	"terminal.integrated.shellArgs.linux": ["-l"],
-	"terminal.integrated.defaultProfile.linux": "bash",
-	"terminal.integrated.profiles.linux": {
-	  "bash": {
-		"path": "/bin/bash",
-		"icon": "terminal-bash",
-		"args": [ "-l" ]
-	  },
-	}
-```
-
-##  Configure files of left4dead1 and/or left4dead2
+## 1/ Configure files of left4dead1 and/or left4dead2
 
 Download repository
 
@@ -82,39 +71,39 @@ Edit files :
 - .vault_pass
 - Add l4d1/2 configuration files in each roles if variables in host_vars/production/production.yml are on true, examples :
 
-	#### In role/lgsminstallation/files/l4d[2]server/lgsm_cfg
+	## In role/lgsminstallation/files/l4d[2]server/lgsm_cfg
 	
 	put file like l4dserver.cfg
 	  
-	#### In role/lgsminstallation/files/l4d[2]server/server
+	## In role/lgsminstallation/files/l4d[2]server/server
 	
   	put file like host.txt or mymotd.txt
 	  
-	#### In role/lgsminstallation/files/l4d[2]server/server_cfg
+	## In role/lgsminstallation/files/l4d[2]server/server_cfg
 	
   	put file like server.cfg, l4dserver.cfg
 	  
-	#### In role/maps/files/l4d[2]server/maps
+	## In role/maps/files/l4d[2]server/maps
 
 	put maps not on the steam workshops
 
-	#### In role/maps/files/l4d2server/maps/workshops
+	## In role/maps/files/l4d2server/maps/workshops
 
   	put workshops maps in workshops folder for l4d2 only
 	  
-	#### In role/metamod/files/l4d[2]server/metamod_plugins
+	## In role/metamod/files/l4d[2]server/metamod_plugins
 	
   	put files in metamod folder
 	  
-	#### In role/sourcemod/files/l4d[2]server/sourcemod_plugins
+	## In role/sourcemod/files/l4d[2]server/sourcemod_plugins
 	
   	put files in addons and cfg/sourcemod folders
 	  
-	#### In role/strippersource/files/l4d[2]server/stripper_cfg
+	## In role/strippersource/files/l4d[2]server/stripper_cfg
 	
   	put cfg maps in dumps and maps folders
 
-##  Installation of left4dead1 and/or left4dead2 dedicated servers
+## 2/ Installation of left4dead1 and/or left4dead2 dedicated servers
 
 As ansible user on the ansible controller :
 
@@ -141,11 +130,6 @@ Run performance playbook
 ansible-playbook --limit production performance.yml
 ```
 
-Reboot nodes
-```bash
-reboot now
-```
-
 ## About
 
 Playbooks have been tested with packages of ansible (8.4.0), ansible-core (2.15.4) and ansible-lint (6.20.0).
@@ -159,3 +143,18 @@ https://docs.linuxgsm.com/
 https://linuxgsm.com/servers/l4dserver/
 
 https://linuxgsm.com/servers/l4d2server/
+
+If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
+
+```bash
+    ..........,
+	"terminal.integrated.shellArgs.linux": ["-l"],
+	"terminal.integrated.defaultProfile.linux": "bash",
+	"terminal.integrated.profiles.linux": {
+	  "bash": {
+		"path": "/bin/bash",
+		"icon": "terminal-bash",
+		"args": [ "-l" ]
+	  },
+	}
+```
