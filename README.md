@@ -150,26 +150,22 @@ Edit files :
 
 ## 2/ Installation of left4dead1 and/or left4dead2 dedicated servers
 
-On the ansible controller, as ansible user :
+On the ansible controller, as ansible user run playbooks on a Debian 11 or 12:
 
-Run the playbooks to install left4dead1 and/or left4dead2 dedicated servers on a Debian 11 or 12 :
+Install left4dead1 and/or left4dead2 dedicated servers :
 
 ```bash
 ansible-playbook --limit production system_update.yml
 ansible-playbook --limit production lgsm.yml
 ```
 
-(optional) If you need to configure firewall with a harden ssh :
-
-Run iptables playbook
+(optional) configure firewall with a harden ssh :
 
 ```bash
 ansible-playbook --limit production configure_ssh_iptables.yml
 ```
 
-(optional) If you have a physical dedicated server (not a VM like virtualbox), it is recommended to :
-
-Run performance playbook
+(optional) improve performance of the server :
 
 ```bash
 ansible-playbook --limit production performance.yml
