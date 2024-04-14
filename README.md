@@ -44,6 +44,12 @@ Generate a ssh key as ansible user :
 ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')" -f id_ed25519_"$(hostname)" -N ""
 ```
 
+Download repository
+
+```bash
+git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
+```
+
 ## 2/ On each ansible nodes
 
 As root user :
@@ -86,12 +92,6 @@ ssh-copy-id ${nodeuser}@${nodeip}
 # Configuration and installation
 
 ## 1/ Configure files of left4dead1 and/or left4dead2
-
-Download repository
-
-```bash
-git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
-```
 
 If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/settings.json
 
