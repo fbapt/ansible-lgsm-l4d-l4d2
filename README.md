@@ -41,7 +41,7 @@ pip install ansible ansible-core ansible-lint
 Generate a ssh key as ansible user :
 
 ```bash
-ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')"
+ssh-keygen -o -a 256 -t ed25519 -C "$(hostname)-$(date +'%d-%m-%Y')" -f id_ed25519_"$(hostname)" -N ""
 ```
 
 ## 2/ On each ansible nodes
