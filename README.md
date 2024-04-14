@@ -41,7 +41,7 @@ pip install ansible ansible-core ansible-lint
 Generate a ssh key as ansible user :
 
 ```bash
-ssh-keygen -o -a 256 -t ed25519 -C "${USER}@$(hostname)" -f id_ed25519_"$(hostname)" -N ""
+ssh-keygen -o -a 256 -t ed25519 -C "${USER}@${HOSTNAME}" -f id_ed25519_"$(hostname)" -N ""
 ```
 
 Download repository
