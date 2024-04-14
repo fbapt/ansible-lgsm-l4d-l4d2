@@ -4,7 +4,7 @@
 
 # Exemple of a basic ansible configuration
 
-## 1/ On the ansible controller
+## 1/ On the ansible controller (tested on Debian 12)
 
 As root user :
 
