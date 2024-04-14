@@ -72,7 +72,7 @@ apt-get install sudo openssh-server python3 python3-apt
 Add NOPASSWD sudo :
 
 ```bash
-echo "${controlleruser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${controlleruser}"
+echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
 ```
 
 Save ip of each ansible nodes :
