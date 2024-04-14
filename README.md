@@ -86,7 +86,7 @@ As ansible user, copy ssh key with user and ip of each ansible nodes :
 ```bash
 nodeip=x.x.x.x
 nodeuser=ansible
-ssh-copy-id ${nodeuser}@${nodeip}
+ssh-copy-id i ~/.ssh/id_ed25519_"$(hostname)".pub ${nodeuser}@${nodeip}
 ```
 
 # Configuration and installation
