@@ -2,7 +2,7 @@
 
 > :warning: You need to have some experience with Ansible and left4dead games before using this repo !
 
-# Exemple of a basic ansible configuration
+# Example of a basic ansible configuration
 
 ## 1/ On the ansible controller (tested on Debian 12)
 
