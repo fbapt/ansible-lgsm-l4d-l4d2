@@ -4,24 +4,34 @@
   block:
     - name: Template sshd config
       ansible.builtin.template:
-        src: sshd_config.j2
+        src: "{{ ansible_distribution }}{{ ansible_distribution_major_version }}/sshd_config.j2"
         dest: /etc/ssh/sshd_config
         owner: root
         group: root
         mode: "0644"
         backup: true
 
-    - name: Copy ssh moduli
-      ansible.builtin.copy:
-        src: moduli
-        dest: /etc/ssh/moduli
-        owner: root
-        group: root
-        mode: "0644"
+    - name: Re-generate the RSA and ED25519 keys
+      ansible.builtin.shell: |
+        rm -f /etc/ssh/ssh_host_*
+        ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N ""
+        ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
+        touch /etc/ssh/ansibleregeneratekeys
+      args:
+        creates: "/etc/ssh/ansibleregeneratekeys"
+        executable: /usr/bin/bash
+
+    - name: Remove small Diffie-Hellman moduli
+      ansible.builtin.shell: |
+        awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.safe
+        cp -p /etc/ssh/moduli.safe /etc/ssh/moduli
+      args:
+        creates: "/etc/ssh/moduli.safe"
+        executable: /usr/bin/bash
 
     - name: Copy ssh audit hardening
       ansible.builtin.copy:
-        src: ssh-audit_hardening.conf
+        src: "{{ ansible_distribution }}{{ ansible_distribution_major_version }}/ssh-audit_hardening.conf"
         dest: /etc/ssh/sshd_config.d/ssh-audit_hardening.conf
         owner: root
         group: root
