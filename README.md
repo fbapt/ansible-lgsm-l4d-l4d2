@@ -154,6 +154,8 @@ Edit files :
 
 On the ansible controller, as ansible user run playbooks on a Debian 11 or 12:
 
+If you have a password with the playbooks --> option -k
+
 Install left4dead1 and/or left4dead2 dedicated servers :
 
 ```bash
