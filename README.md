@@ -41,9 +41,9 @@ pip install ansible ansible-core ansible-lint
 Generate a ssh key as ansible user :
 
 ```bash
-ssh-keygen -o -a 256 -t ed25519 -C "${USER}@${HOSTNAME}" -f ~/.ssh/id_ed25519_"${HOSTNAME}" -N ""
+ssh-keygen -o -a 256 -t ed25519 -C "${USER}@${HOSTNAME}" -f ~/.ssh/id_ed25519_ansible -N ""
 ```
-Download private key id_ed25519_"${HOSTNAME}" to Windows Linux etc...
+Download private key id_ed25519_ansible to Windows Linux etc...
 https://kb.iu.edu/d/aews
 
 Download repository
@@ -88,7 +88,7 @@ As ansible user, copy ssh key with user and ip of each ansible nodes :
 ```bash
 nodeip=x.x.x.x
 nodeuser=ansible
-ssh-copy-id -i ~/.ssh/id_ed25519_"${HOSTNAME}".pub ${nodeuser}@${nodeip}
+ssh-copy-id -i ~/.ssh/id_ed25519_ansible.pub ${nodeuser}@${nodeip}
 ```
 
 # Configuration and installation
