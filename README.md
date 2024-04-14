@@ -113,7 +113,7 @@ If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/se
 Edit files :
 
 - inventory/lgsmhosts.yml
-- host_vars/production/production.yml
+- host_vars/production/production.yml (important: ssh public key for users)
 - host_vars/production/vault.yml
 - .vault_pass
 - Add l4d1/2 configuration files in each roles if variables in host_vars/production/production.yml are on true, examples :
