@@ -161,6 +161,7 @@ ansible-playbook --limit production lgsm.yml
 
 (optional) configure firewall with a harden ssh :
 > :warning: You need to create each user ssh key on your linux server and download on your computer before executing this playbook ! use a sofware such as pageant (putty)...
+> accepted hostkey rsa and ed25519
 
 ```bash
 ansible-playbook --limit production configure_ssh_iptables.yml
