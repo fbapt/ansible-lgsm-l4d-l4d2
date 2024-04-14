@@ -18,7 +18,7 @@ adduser "${controlleruser}"
 Install requirements packages :
 
 ```bash
-apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full
+apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full git
 ```
 
 Add NOPASSWD sudo :
