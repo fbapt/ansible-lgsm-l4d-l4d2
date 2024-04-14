@@ -43,6 +43,8 @@ Generate a ssh key as ansible user :
 ```bash
 ssh-keygen -o -a 256 -t ed25519 -C "${USER}@${HOSTNAME}" -f id_ed25519_"${HOSTNAME}" -N ""
 ```
+Download private key id_ed25519_"${HOSTNAME}" to Windows Linux etc...
+https://kb.iu.edu/d/aews
 
 Download repository
 
