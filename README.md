@@ -21,10 +21,12 @@ Install requirements packages :
 apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full git
 ```
 
-Add NOPASSWD sudo :
+Add NOPASSWD sudo + hardening sudoers :
 
 ```bash
 echo "${controlleruser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${controlleruser}"
+chmod 750 /etc/sudoers.d
+chmod 440 /etc/sudoers.d/"${controlleruser}"
 ```
 
 Install ansible package with python3 environnement as ansible user :
@@ -69,10 +71,12 @@ Install requirements package :
 apt-get install sudo openssh-server python3 python3-apt
 ```
 
-Add NOPASSWD sudo :
+Add NOPASSWD sudo + hardening sudoers :
 
 ```bash
 echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
+chmod 750 /etc/sudoers.d
+chmod 440 /etc/sudoers.d/"${nodeuser}"
 ```
 
 Save ip of each ansible nodes :
