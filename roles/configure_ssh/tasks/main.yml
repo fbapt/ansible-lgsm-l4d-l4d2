@@ -8,7 +8,7 @@
         dest: /etc/ssh/sshd_config
         owner: root
         group: root
-        mode: "0644"
+        mode: "0600"
         backup: true
 
     - name: Re-generate the RSA and ED25519 keys
