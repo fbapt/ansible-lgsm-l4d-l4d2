@@ -33,12 +33,12 @@ PermitRootLogin no
 AuthenticationMethods publickey
 StrictModes yes
 MaxAuthTries 3
-#MaxSessions 10
+MaxSessions 2
 
 PubkeyAuthentication yes
 
 # Expect .ssh/authorized_keys2 to be disregarded by default in future.
-AuthorizedKeysFile	.ssh/authorized_keys .ssh/authorized_keys2
+AuthorizedKeysFile	.ssh/authorized_keys
 
 #AuthorizedPrincipalsFile none
 
@@ -49,12 +49,12 @@ AuthorizedKeysFile	.ssh/authorized_keys .ssh/authorized_keys2
 HostbasedAuthentication no
 # Change to yes if you don't trust ~/.ssh/known_hosts for
 # HostbasedAuthentication
-IgnoreUserKnownHosts yes
+IgnoreUserKnownHosts no
 # Don't read the user's ~/.rhosts and ~/.shosts files
 IgnoreRhosts yes
 
 # To disable tunneled clear text passwords, change to no here!
-PasswordAuthentication yes
+PasswordAuthentication no
 PermitEmptyPasswords no
 
 # Change to yes to enable challenge-response passwords (beware issues with
@@ -99,14 +99,14 @@ Compression no
 ClientAliveInterval 300
 ClientAliveCountMax 0
 UseDNS no
-#PidFile /run/sshd.pid
+PidFile /run/sshd.pid
 #MaxStartups 10:30:100
 #PermitTunnel no
 #ChrootDirectory none
 #VersionAddendum none
 
 # no default banner path
-#Banner none
+Banner none
 
 # Allow client to pass locale environment variables
 AcceptEnv LANG LC_*
