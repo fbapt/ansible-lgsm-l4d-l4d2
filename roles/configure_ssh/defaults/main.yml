@@ -1,3 +1,2 @@
 ---
 configure_ssh_port: 22
-configure_ssh_authenticationmethods: password
