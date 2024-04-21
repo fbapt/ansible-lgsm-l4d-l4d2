@@ -216,7 +216,7 @@ Install left4dead1 and/or left4dead2 dedicated servers :
 
 ```bash
 ansible-playbook system_update.yml --limit production
-ansible-playbook production lgsm.yml --limit production
+ansible-playbook lgsm.yml --limit production
 ```
 
 (optional) configure hardening firewall + ssh with creation of ssh keys (sshd_config is restricted to IPV4 and accept only ssh keys) :
