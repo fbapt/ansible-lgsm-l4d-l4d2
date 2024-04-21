@@ -33,22 +33,29 @@ Install ansible package with python3 environnement as ansible user :
 
 ```bash
 su - "${controlleruser}"
-python3 -m venv venv
+python3 -m venv --upgrade-deps ~/venv
 echo "source ~/venv/bin/activate" | tee -a ~/.profile
 source ~/venv/bin/activate
-pip install pip --upgrade
 pip install ansible ansible-core ansible-lint
 ```
 
 Generate a ssh key as ansible user :
 
+> :warning: Accepted hostkey rsa minimun 4096 bits and ed25519
+
+Recommended : ed25519
+
 ```bash
 ssh-keygen -o -a 256 -t ed25519 -C "${USER}@${HOSTNAME}" -f ~/.ssh/id_ed25519_ansible -N ""
 ```
-Download private key id_ed25519_ansible to Windows Linux etc...
-https://kb.iu.edu/d/aews
 
-Download repository
+or rsa
+
+```bash
+ssh-keygen -o -a 256 -t rsa -b 4096 -C "${USER}@${HOSTNAME}" -f ~/.ssh/rsa_ansible -N ""
+```
+
+Download repository :
 
 ```bash
 git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
@@ -62,7 +69,7 @@ Create a user ansible :
 
 ```bash
 nodeuser=ansible
-adduser "${nodeuser}
+adduser "${nodeuser}"
 ```
 
 Install requirements package :
@@ -92,7 +99,8 @@ As ansible user, copy ssh key with user and ip of each ansible nodes :
 ```bash
 nodeip=x.x.x.x
 nodeuser=ansible
-ssh-copy-id -i ~/.ssh/id_ed25519_ansible.pub ${nodeuser}@${nodeip}
+sshtype=ed25519 or rsa
+ssh-copy-id -i ~/.ssh/id_"${sshtype}"_ansible.pub "${nodeuser}@${nodeip}"
 ```
 
 # Configuration and installation
@@ -117,74 +125,115 @@ If you are on vscode add this to your c:/Users/USER/AppData/Roaming/Code/User/se
 Edit files :
 
 - inventory/lgsmhosts.yml
-- host_vars/production/production.yml (important: ssh public key for users)
+
+	*Change parameters of your host
+
+- host_vars/production/production.yml
+
+	*Change parameters as you want
+
+	*(optional) : create ssh keys if you want to use playbook configure_ssh_iptables.yml :
+
+> :warning: You need to create each user ssh key (l4d1,l4d2) on your server and download it on your computer !
+
+> Accepted hostkey rsa minimun 4096 bits and ed25519 for security
+
+I assume you are on Windows :
+
+use a sofware such as PuTTYgen + pageant (include in PuTTY)...
+
+In PuTTYgen for security tick :
+
+"Use proven primes with even distribution (slowest)" and "Use "strong" primes as RSA key factors"
+
+![alt text](image.png)
+
+Click on RSA with 4096 bits or EdDSA(recommanded) and Generate
+
+Add a passphrase that should be at least 26 characters for security
+
+Edit "ssh-keys:" and copy paste public key
+
+File --> Save private key
+
+Load key with pageant --> Add key
+
 - host_vars/production/vault.yml
-- .vault_pass
+
+	*Use a strong user password
+
+	*.vault_pass :
+
+Comment line in file ansible.cfg  --> #vault_password_file=.vault_pass
+
+change password (example for debian12testing)
+
+```bash
+ansible-vault rekey host_vars/debian12testing/vault.yml
+```
+
+Uncomment line in file ansible.cfg  --> vault_password_file=.vault_pass
+
 - Add l4d1/2 configuration files in each roles if variables in host_vars/production/production.yml are on true, examples :
 
 	## In role/lgsminstallation/files/l4d[2]server/lgsm_cfg
-	
+
 	put file like l4dserver.cfg
-	  
+
 	## In role/lgsminstallation/files/l4d[2]server/server
-	
-  	put file like host.txt or mymotd.txt
-	  
+
+	put file like host.txt or mymotd.txt
+
 	## In role/lgsminstallation/files/l4d[2]server/server_cfg
-	
-  	put file like server.cfg, l4dserver.cfg
-	  
+
+	put file like server.cfg, l4dserver.cfg
+
 	## In role/maps/files/l4d[2]server/maps
 
 	put maps not on the steam workshops
 
 	## In role/maps/files/l4d2server/maps/workshops
 
-  	put workshops maps in workshops folder for l4d2 only
-	  
+	put workshops maps in workshops folder for l4d2 only
+
 	## In role/metamod/files/l4d[2]server/metamod_plugins
-	
-  	put files in metamod folder
-	  
+
+	put files in metamod folder
+
 	## In role/sourcemod/files/l4d[2]server/sourcemod_plugins
-	
-  	put files in addons and cfg/sourcemod folders
-	  
+
+	put files in addons and cfg/sourcemod folders
+
 	## In role/strippersource/files/l4d[2]server/stripper_cfg
-	
-  	put cfg maps in dumps and maps folders
+
+	put cfg maps in dumps and maps folders
 
 ## 2/ Installation of left4dead1 and/or left4dead2 dedicated servers
 
-On the ansible controller, as ansible user run playbooks on a Debian 11 or 12:
-
-If you have a password with the playbooks --> option -k
+On the ansible controller, as ansible user run playbooks on a Debian 11 or 12 :
 
 Install left4dead1 and/or left4dead2 dedicated servers :
 
 ```bash
-ansible-playbook --limit production system_update.yml
-ansible-playbook --limit production lgsm.yml
+ansible-playbook system_update.yml --limit production
+ansible-playbook production lgsm.yml --limit production
 ```
 
-(optional) configure firewall with a harden ssh :
-> :warning: You need to create each user ssh key on your linux server and download on your computer before executing this playbook ! use a sofware such as pageant (putty)...
-
-> Accepted hostkey rsa minimun 3072 and ed25519, ssh is restricted to IPV4
+(optional) configure firewall with a harden ssh with creation of ssh keys (sshd_config is restricted to IPV4 and accept only ssh keys) :
 
 ```bash
-ansible-playbook --limit production configure_ssh_iptables.yml
+ansible-playbook configure_ssh_iptables.yml --limit production
 ```
 
 (optional) improve performance of the server :
 
 ```bash
-ansible-playbook --limit production performance.yml
+ansible-playbook performance.yml --limit production
 ```
 
 ## About
 
-Playbooks have been tested with packages of ansible (9.4.0), ansible-core (2.16.5) and ansible-lint (24.2.2).
+Playbooks have been tested with packages of ansible community (9.4.0), ansible-core (2.16.6) and ansible-lint (24.2.2).
 
 Tested on Debian 11 and 12
 
@@ -196,6 +245,6 @@ https://linuxgsm.com/servers/l4dserver/
 
 https://linuxgsm.com/servers/l4d2server/
 
-Ansible :
+Documentation of Ansible :
 
-[https://www.ansible.com/](https://docs.ansible.com/ansible/latest/getting_started/index.html)
+[https://docs.ansible.com/ansible/latest/getting_started/index.html](https://docs.ansible.com/ansible/latest/getting_started/index.html)
