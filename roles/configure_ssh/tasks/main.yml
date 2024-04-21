@@ -2,6 +2,16 @@
 - name: Block ssh
   notify: Restart ssh iptables or nftables
   block:
+    - name: Set up multiple authorized keys
+      ansible.posix.authorized_key:
+        user: "{{ item.0.user }}"
+        state: present
+        key: "{{ item.1.type }} {{ item.1.key }} {{ item.1.comment }}"
+      loop: "{{ lgsm | subelements('ssh-keys') }}"
+      loop_control:
+        label: "user: {{ item.0.user }} key: {{ item.1.type }} {{ item.1.key }} {{ item.1.comment }}"
+      when: not ansible_check_mode
+
     - name: Template sshd config
       ansible.builtin.template:
         src: "{{ ansible_distribution }}{{ ansible_distribution_major_version }}/sshd_config.j2"

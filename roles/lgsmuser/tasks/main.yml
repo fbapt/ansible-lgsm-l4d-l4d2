@@ -8,16 +8,6 @@
   loop_control:
     label: "user: {{ item.user }} password: {{ item.password | password_hash('sha512', 'mysecretsalt', rounds=656000) }}"
 
-- name: Set up multiple authorized keys
-  ansible.posix.authorized_key:
-    user: "{{ item.0.user }}"
-    state: present
-    key: "{{ item.1.type }} {{ item.1.key }} {{ item.1.comment }}"
-  loop: "{{ lgsm | subelements('ssh-keys') }}"
-  loop_control:
-    label: "user: {{ item.0.user }} key: {{ item.1.type }} {{ item.1.key }} {{ item.1.comment }}"
-  when: not ansible_check_mode
-
 - name: Add or modify user limits for steamcmd
   community.general.pam_limits:
     domain: "{{ item.user }}"
