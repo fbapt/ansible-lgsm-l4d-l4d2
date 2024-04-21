@@ -75,7 +75,7 @@ adduser "${nodeuser}"
 Install requirements package :
 
 ```bash
-apt-get install sudo openssh-server python3 python3-apt
+apt-get install sudo openssh-server python3 python3-apt cron
 ```
 
 Add NOPASSWD sudo + hardening sudoers :
