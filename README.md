@@ -148,7 +148,7 @@ In PuTTYgen for security tick :
 
 ![alt text](image.png)
 
-Click on RSA with 4096 bits or EdDSA(recommanded) and Generate
+Click on RSA with 4096 bits or EdDSA(recommended) and Generate
 
 Add a passphrase that should be at least 26 characters for security
 
@@ -219,7 +219,7 @@ ansible-playbook system_update.yml --limit production
 ansible-playbook production lgsm.yml --limit production
 ```
 
-(optional) configure firewall with a harden ssh with creation of ssh keys (sshd_config is restricted to IPV4 and accept only ssh keys) :
+(optional) configure hardening firewall + ssh with creation of ssh keys (sshd_config is restricted to IPV4 and accept only ssh keys) :
 
 ```bash
 ansible-playbook configure_ssh_iptables.yml --limit production
