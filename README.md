@@ -59,7 +59,7 @@ ssh-keygen -o -a 256 -t rsa -b 4096 -C "${USER}@${HOSTNAME}" -f ~/.ssh/rsa_ansib
 Download repository :
 
 ```bash
-git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git
+git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git ~/ansible-lgsm-l4d-l4d2
 ```
 
 ## 2/ On each ansible nodes
