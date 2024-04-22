@@ -174,6 +174,8 @@ ansible-vault rekey host_vars/debian12testing/vault.yml
 
 Uncomment line in file ansible.cfg  --> vault_password_file=.vault_pass
 
+Edit .vault_pass with the new password
+
 - Add l4d1/2 configuration files in each roles if variables in host_vars/production/production.yml are on true, examples :
 
 	## In role/lgsminstallation/files/l4d[2]server/lgsm_cfg
