@@ -13,6 +13,7 @@ Create a user ansible :
 ```bash
 controlleruser=ansible
 adduser "${controlleruser}"
+usermod -aG sudo "${controlleruser}"
 ```
 
 Install requirements packages :
@@ -70,6 +71,7 @@ Create a user ansible :
 ```bash
 nodeuser=ansible
 adduser "${nodeuser}"
+usermod -aG sudo "${nodeuser}"
 ```
 
 Install requirements package :
