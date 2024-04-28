@@ -8,6 +8,12 @@
 
 As root user :
 
+Install requirements packages :
+
+```bash
+apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full git
+```
+
 Create a user ansible with sudo group :
 
 ```bash
@@ -22,12 +28,6 @@ Add NOPASSWD sudo + hardening sudoers :
 echo "${controlleruser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${controlleruser}"
 chmod 750 /etc/sudoers.d
 chmod 440 /etc/sudoers.d/"${controlleruser}"
-```
-
-Install requirements packages :
-
-```bash
-apt-get install sudo openssh-server openssh-client whois python3 python3-apt python3-venv python3-full git
 ```
 
 Install ansible package with python3 environnement as ansible user :
@@ -66,6 +66,12 @@ git clone https://github.com/fbapt/ansible-lgsm-l4d-l4d2.git ~/ansible-lgsm-l4d-
 
 As root user :
 
+Install requirements package :
+
+```bash
+apt-get install sudo openssh-server python3 python3-apt cron
+```
+
 Create a user ansible with sudo group :
 
 ```bash
@@ -80,12 +86,6 @@ Add NOPASSWD sudo + hardening sudoers :
 echo "${nodeuser} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${nodeuser}"
 chmod 750 /etc/sudoers.d
 chmod 440 /etc/sudoers.d/"${nodeuser}"
-```
-
-Install requirements package :
-
-```bash
-apt-get install sudo openssh-server python3 python3-apt cron
 ```
 
 Save ip of each ansible nodes :
