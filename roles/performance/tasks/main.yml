@@ -91,3 +91,11 @@
     special_time: reboot
     job: "sleep 30 && ethtool -K {{ physical_interface.stdout }} rx-udp-gro-forwarding on"
     state: present
+
+- name: Crontab configuration udp throughput
+  ansible.builtin.cron:
+    name: Disable generic-receive-offload, generic-segmentation-offload for UDP throughput
+    user: root
+    special_time: reboot
+    job: "sleep 35 && ethtool -K {{ physical_interface.stdout }} gro off gso off"
+    state: present
