@@ -5,14 +5,14 @@
     name: "{{ item.1.name }}"
     user: "{{ item.0.user }}"
     special_time: reboot
-    job: "sleep 60 && /home/{{ item.0.user }}/{{ item.0.game_name }} {{ item.1.command }} > /dev/null 2>&1"
+    job: "sleep {{ item.1.sleep }} && /home/{{ item.0.user }}/{{ item.0.game_name }} {{ item.1.command }} > /dev/null 2>&1"
     state: present
   loop: "{{ lgsm | subelements('crontab_reboot') }}"
   loop_control:
     label: "Name: {{ item.1.name }}
       User: {{ item.0.user }}
       Special_time: reboot
-      job: sleep 60 && /home/{{ item.0.user }}/{{ item.0.game_name }} {{ item.1.command }} > /dev/null 2>&1"
+      job: sleep {{ item.1.sleep }} && /home/{{ item.0.user }}/{{ item.0.game_name }} {{ item.1.command }} > /dev/null 2>&1"
   tags: crontab
 
 - name: Crontab config

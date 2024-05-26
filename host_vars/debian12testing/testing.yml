@@ -30,6 +30,7 @@ lgsm:
     crontab_reboot:
       - name: "l4dserver_reboot_monitor"
         command: "monitor"
+        sleep: "40"
     crontab:
       - name: "l4dserver_update"
         minute: "*/30"
@@ -82,6 +83,7 @@ lgsm:
     crontab_reboot:
       - name: "l4d2server_reboot_monitor"
         command: "monitor"
+        sleep: "45"
     crontab:
       - name: "l4d2server_update"
         minute: "*/30"
