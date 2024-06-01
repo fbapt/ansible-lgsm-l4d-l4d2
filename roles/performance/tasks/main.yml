@@ -30,13 +30,6 @@
   ansible.builtin.command:
     cmd: tuned-adm profile network-latency
   changed_when: false
-  when: physical.stdout == ""
-
-- name: Tuned-adm profile virtual-guest
-  ansible.builtin.command:
-    cmd: tuned-adm profile virtual-guest
-  changed_when: false
-  when: physical.stdout != ""
 
 - name: Grub disable mitigations
   ansible.builtin.copy:
