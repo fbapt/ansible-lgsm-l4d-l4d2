@@ -23,10 +23,10 @@
 -A PREROUTING -p tcp -m tcp --tcp-flags PSH,ACK PSH -j DROP
 -A PREROUTING -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
 
-# Limit icmp
+# Limit icmp requests to prevent ping floods
 -A PREROUTING -p icmp -m hashlimit --hashlimit-upto 3/sec --hashlimit-burst 5 --hashlimit-mode srcip --hashlimit-name icmp -j ACCEPT
 
-# Drop fragments in all chains
+# Drop fragmented packets to protect against fragmentation attacks
 -A PREROUTING -f -j DROP
 COMMIT
 
@@ -68,7 +68,7 @@ COMMIT
 -A INPUT -p tcp -m tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 10 --hitcount 10 -j DROP
 -A INPUT -p tcp -m tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m hashlimit --hashlimit-upto 2/sec --hashlimit-burst 5 --hashlimit-mode dstport --hashlimit-name SSHPROTECT -j ACCEPT
 
-# Games servers ports
+# Game servers ports
 # Protect a game server by including rate-limit incoming connections
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --mask 255.255.255.255 --rsource
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 20 --hitcount 10 --name DEFAULT --mask 255.255.255.255 --rsource -j DROP
@@ -97,6 +97,23 @@ COMMIT
 -A INPUT -p tcp -m conntrack --ctstate NEW -j DROP
 
 # Protection against port scanning
--A port-scanning -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK RST -m limit --limit 1/sec --limit-burst 2 -j RETURN
+-A port-scanning -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK RST -m limit --limit 10/sec --limit-burst 5 -j RETURN
 -A port-scanning -j DROP
+
+# Additional optimizations and protections
+# Protect against Ping of Death attacks by limiting ICMP request sizes
+-A INPUT -p icmp --icmp-type echo-request -m length --length 64:1024 -m limit --limit 5/sec -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-request -j DROP
+
+# Limit UDP connections to avoid amplification attacks
+-A INPUT -p udp -m limit --limit 50/sec --limit-burst 100 -j ACCEPT
+-A INPUT -p udp -j DROP
+
+# Log invalid packets with rate limiting (to prevent log spamming)
+-A INPUT -m conntrack --ctstate INVALID -m limit --limit 5/min --limit-burst 10 -j LOG --log-prefix "Invalid packet: "
+-A INPUT -m conntrack --ctstate NEW -m limit --limit 5/min --limit-burst 10 -j LOG --log-prefix "New TCP connection dropped: "
+
+# SYN flood protection using SYNPROXY
+-A INPUT -p tcp --syn -m connlimit --connlimit-above 10 -j SYNPROXY --timeout 10
+-A INPUT -p tcp --syn -m conntrack --ctstate NEW -m limit --limit 20/sec --limit-burst 100 -j ACCEPT
 COMMIT
