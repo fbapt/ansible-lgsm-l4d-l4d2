@@ -1,0 +1,9 @@
+#! /usr/sbin/nft -f
+
+flush ruleset
+
+# Inclure les règles IPv4
+include "/etc/nftables_ipv4.conf"
+
+# Inclure les règles IPv6
+include "/etc/nftables_ipv6.conf"

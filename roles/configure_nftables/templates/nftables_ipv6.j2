@@ -1,0 +1,23 @@
+# Table filter pour gérer l'IPv6
+table ip6 filter {
+    chain INPUT {
+        # Interdire tout par défaut
+        type filter hook input priority filter; policy drop;
+
+        # Autoriser le trafic interne sur l'interface loopback
+        iifname "lo" accept
+
+        # Accepter toutes les connexions établies
+        ct state established accept
+    }
+
+    chain FORWARD {
+        # Interdire tout par défaut
+        type filter hook forward priority filter; policy drop;
+    }
+
+    chain OUTPUT {
+        # Autoriser tout par défaut
+        type filter hook output priority filter; policy accept;
+    }
+}
