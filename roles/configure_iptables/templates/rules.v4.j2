@@ -113,7 +113,7 @@ COMMIT
 -A INPUT -m conntrack --ctstate INVALID -m limit --limit 5/min --limit-burst 10 -j LOG --log-prefix "Invalid packet: "
 -A INPUT -m conntrack --ctstate NEW -m limit --limit 5/min --limit-burst 10 -j LOG --log-prefix "New TCP connection dropped: "
 
-# SYN flood protection using SYNPROXY
--A INPUT -p tcp --syn -m connlimit --connlimit-above 10 -j SYNPROXY --timeout 10
+# SYN flood protection
+-A INPUT -p tcp --syn -m connlimit --connlimit-above 10 -j DROP
 -A INPUT -p tcp --syn -m conntrack --ctstate NEW -m limit --limit 20/sec --limit-burst 100 -j ACCEPT
 COMMIT
