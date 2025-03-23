@@ -2,8 +2,8 @@
 
 flush ruleset
 
-# Table inet pour gérer à la fois IPv4 et IPv6
-table inet filter {
+# Table filter pour gérer l'IPv4 uniquement
+table ip filter {
     chain INPUT {
         # Interdire tout par défaut
         type filter hook input priority filter; policy drop;
@@ -15,15 +15,18 @@ table inet filter {
         ct state established accept
 
         # Règle pour SSH avec limitation
-        tcp dport {{ configure_nftables_ssh_port }} ct state new meter SSHPROTECT { tcp dport limit rate 2/second } counter accept
+        tcp dport {{ configure_nftables_ssh_port }} ct state new meter SSHPROTECT { tcp dport limit rate 2/second burst 2 packets } counter accept
 
         # Limitation pour les serveurs de jeux
-        meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } ct state new meter DEFAULT size 65535 { ip saddr limit rate over 20/second burst 10 packets } counter drop
-        meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } ct state new meter UDP_NEW_LIMIT { ip saddr timeout 5s limit rate 1/second burst 3 packets } counter accept
-        meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } ct state established meter UDP_ESTABLISHED_LIMIT { udp dport . ip saddr limit rate 20/second burst 60 packets } counter accept
+        udp dport { {{ configure_nftables_games_servers_ports }} } ct state new meter UDP_NEW_LIMIT { ip saddr limit rate 1/second burst 3 packets } counter accept
+        udp dport { {{ configure_nftables_games_servers_ports }} } ct state established limit rate 20/second burst 60 packets counter accept
 
         # Protection contre les paquets UDP avec des tailles non valides
-        meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } meta length < 29 or meta length == 30-32 or meta length == 46 or meta length == 60 or meta length > 2520 counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip length < 29 counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 30-32 counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 46 counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 60 counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip length > 2520 counter drop
 
         # Limiter le nombre de connexions TCP par source IP
         meta l4proto tcp ct state new limit rate 20/second burst 20 packets counter accept
@@ -53,7 +56,7 @@ table inet filter {
     }
 }
 
-table inet mangle {
+table ip mangle {
     chain PREROUTING {
         type filter hook prerouting priority mangle; policy accept;
 
@@ -66,11 +69,10 @@ table inet mangle {
         tcp flags fin / fin,ack counter drop
 
         # Limitation pour ICMP (3 requêtes par seconde)
-        meta l4proto icmp meter { ip saddr limit rate 3/second } counter accept
+        ip protocol icmp limit rate 3/second counter accept
 
         # Protection contre les fragments non valides
         ip frag-off & 8191 != 0 counter drop
-        ip6 frag-off & 8191 != 0 counter drop
     }
 
     chain OUTPUT {
@@ -78,13 +80,13 @@ table inet mangle {
     }
 }
 
-table inet raw {
+table ip raw {
     chain PREROUTING {
         type filter hook prerouting priority raw; policy accept;
 
         # Limitation pour UDP, éviter le flood
-        meta l4proto udp meter periplimit { udp dport . ip saddr timeout 300s limit rate 50/second } counter accept
-        meta l4proto udp counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } limit rate 50/second counter accept
+        udp dport { {{ configure_nftables_games_servers_ports }} } counter drop
     }
 
     chain OUTPUT {
