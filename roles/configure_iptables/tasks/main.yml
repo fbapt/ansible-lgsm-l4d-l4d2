@@ -19,6 +19,11 @@
     name: iptables
     path: /usr/sbin/iptables-legacy
 
+- name: Set ip6tables to legacy backend using alternatives module
+  community.general.alternatives:
+    name: ip6tables
+    path: /usr/sbin/ip6tables-legacy
+
 - name: Enable iptables
   ansible.builtin.systemd:
     name: iptables
