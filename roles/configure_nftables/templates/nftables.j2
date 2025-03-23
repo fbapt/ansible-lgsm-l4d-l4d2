@@ -20,8 +20,8 @@ table inet filter {
         # Limitation pour les serveurs de jeux
         meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } ct state new meter DEFAULT size 65535 { ip saddr limit rate over 20/second burst 10 packets } counter drop
         meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } ct state new meter UDP_NEW_LIMIT { ip saddr timeout 5s limit rate 1/second burst 3 packets } counter accept
-        meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } ct state established meter UDP_ESTABLISHED_LIMIT { udp dport . ip saddr . tcp sport limit rate 20/second burst 60 packets } counter accept
-        
+        meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } ct state established meter UDP_ESTABLISHED_LIMIT { udp dport . ip saddr limit rate 20/second burst 60 packets } counter accept
+
         # Protection contre les paquets UDP avec des tailles non valides
         meta l4proto udp th dport { {{ configure_nftables_games_servers_ports }} } meta length < 29 or meta length == 30-32 or meta length == 46 or meta length == 60 or meta length > 2520 counter drop
 
@@ -83,7 +83,7 @@ table inet raw {
         type filter hook prerouting priority raw; policy accept;
 
         # Limitation pour UDP, éviter le flood
-        meta l4proto udp meter periplimit { tcp dport . ip saddr timeout 300s limit rate 50/second } counter accept
+        meta l4proto udp meter periplimit { udp dport . ip saddr timeout 300s limit rate 50/second } counter accept
         meta l4proto udp counter drop
     }
 
