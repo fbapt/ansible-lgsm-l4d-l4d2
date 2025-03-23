@@ -37,7 +37,7 @@ su - "${controlleruser}"
 python3 -m venv --upgrade-deps ~/venv
 echo "source ~/venv/bin/activate" | tee -a ~/.profile
 source ~/venv/bin/activate
-pip install ansible ansible-core ansible-lint
+pip install ansible ansible-core ansible-lint passlib
 ```
 
 Generate a ssh key as ansible user :
