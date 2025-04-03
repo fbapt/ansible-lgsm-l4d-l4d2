@@ -83,5 +83,4 @@
     label: "dest: /home/{{ item.user }}/serverfiles/{{ item.directory }}/addons/metamod.vdf"
 
 - name: Include tasks copy metamod plugins files
-  ansible.builtin.include_tasks: metamod_plugins.yml
-  tags: metamod_plugins
+  ansible.builtin.import_tasks: metamod_plugins.yml

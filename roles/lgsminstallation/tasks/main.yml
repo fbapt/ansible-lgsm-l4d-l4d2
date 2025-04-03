@@ -39,17 +39,13 @@
   when: not ansible_check_mode
 
 - name: Include tasks copy lgsm cfg files
-  ansible.builtin.include_tasks: lgsm_cfg.yml
-  tags: lgsm_cfg
+  ansible.builtin.import_tasks: lgsm_cfg.yml
 
 - name: Include tasks copy server cfg files
-  ansible.builtin.include_tasks: server_cfg.yml
-  tags: server_cfg
+  ansible.builtin.import_tasks: server_cfg.yml
 
 - name: Include tasks copy server files
-  ansible.builtin.include_tasks: serverfiles.yml
-  tags: serverfiles
+  ansible.builtin.import_tasks: serverfiles.yml
 
 - name: Include tasks crontab
-  ansible.builtin.include_tasks: crontab.yml
-  tags: crontab
+  ansible.builtin.import_tasks: crontab.yml

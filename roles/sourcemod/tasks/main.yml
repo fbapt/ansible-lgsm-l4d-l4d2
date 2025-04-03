@@ -63,9 +63,7 @@
         label: "dest: /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/sourcemod/VERSION"
 
 - name: Include task Configure admins
-  ansible.builtin.include_tasks: admins.yml
-  tags: admins
+  ansible.builtin.import_tasks: admins.yml
 
 - name: Include tasks copy sourcemod plugins files
-  ansible.builtin.include_tasks: sourcemod_plugins.yml
-  tags: sourcemod_plugins
+  ansible.builtin.import_tasks: sourcemod_plugins.yml

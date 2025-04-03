@@ -56,5 +56,4 @@
         label: "dest: /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/stripper/VERSION"
 
 - name: Include tasks copy stripper cfg files
-  ansible.builtin.include_tasks: stripper_cfg.yml
-  tags: stripper_cfg
+  ansible.builtin.import_tasks: stripper_cfg.yml
