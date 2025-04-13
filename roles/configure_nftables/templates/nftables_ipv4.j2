@@ -14,15 +14,15 @@ table ip filter {
         tcp dport {{ configure_nftables_ssh_port }} ct state new meter SSHPROTECT { tcp dport limit rate 2/second burst 2 packets } counter accept
 
         # Limitation pour les serveurs de jeux
-        udp dport { {{ configure_nftables_games_servers_ports }} } ct state new meter UDP_NEW_LIMIT { ip saddr limit rate 1/second burst 3 packets } counter accept
-        udp dport { {{ configure_nftables_games_servers_ports }} } ct state established limit rate 20/second burst 60 packets counter accept
+        udp dport { {{ configure_nftables_games_servers_ports }} } ct state new meter UDP_NEW_LIMIT { ip saddr limit rate 5/second burst 10 packets } counter accept
+        udp dport { {{ configure_nftables_games_servers_ports }} } ct state established limit rate 30/second burst 80 packets counter accept
 
         # Protection contre les paquets UDP avec des tailles non valides
-        udp dport { {{ configure_nftables_games_servers_ports }} } ip length < 29 counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip length < 40 counter drop
         udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 30-32 counter drop
         udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 46 counter drop
         udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 60 counter drop
-        udp dport { {{ configure_nftables_games_servers_ports }} } ip length > 2520 counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip length > 2500 counter drop
 
         # Limiter le nombre de connexions TCP par source IP
         meta l4proto tcp ct state new limit rate 20/second burst 20 packets counter accept
