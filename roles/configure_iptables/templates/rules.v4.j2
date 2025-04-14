@@ -30,29 +30,11 @@
 -A PREROUTING -f -j DROP
 COMMIT
 
-*raw
-:PREROUTING ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
-
-# Protection modérée UDP (brute-force, amplification)
--A PREROUTING -p udp -m hashlimit --hashlimit-upto 50/sec --hashlimit-burst 10 --hashlimit-mode srcip,dstport --hashlimit-name periplimit --hashlimit-htable-expire 300000 -j ACCEPT
-COMMIT
-
 *filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
-:UDP_NEW_LIMIT - [0:0]
-:UDP_NEW_LIMIT_GLOBAL - [0:0]
 :port-scanning - [0:0]
-
-# Protection UDP par IP/port
--A UDP_NEW_LIMIT -m hashlimit --hashlimit-upto 1/sec --hashlimit-burst 3 --hashlimit-mode srcip,dstport --hashlimit-name NEW_HASHLIMIT --hashlimit-htable-expire 5000 -j UDP_NEW_LIMIT_GLOBAL
--A UDP_NEW_LIMIT -j DROP
-
-# Limite globale UDP
--A UDP_NEW_LIMIT_GLOBAL -m hashlimit --hashlimit-upto 10/sec --hashlimit-burst 20 --hashlimit-mode dstport --hashlimit-name NEW_HASHLIMIT_GLOBAL --hashlimit-htable-expire 5000 -j ACCEPT
--A UDP_NEW_LIMIT_GLOBAL -j DROP
 
 # Interface loopback
 -A INPUT -i lo -j ACCEPT
@@ -65,18 +47,9 @@ COMMIT
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 10 --hitcount 10 -j DROP
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m hashlimit --hashlimit-upto 2/sec --hashlimit-burst 5 --hashlimit-mode dstport --hashlimit-name SSHPROTECT -j ACCEPT
 
-# Jeux - Protection UDP avec limitation, recent & taille
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --rsource
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 20 --hitcount 10 --name DEFAULT --rsource -j DROP
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -j UDP_NEW_LIMIT
+# Jeux - Plus de limitation UDP, acceptation directe
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -j ACCEPT
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-# Drop UDP suspects par taille
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 0:28 -j DROP
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 30:32 -j DROP
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 46 -j DROP
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 60 -j DROP
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m length --length 2521:65535 -j DROP
 
 # Protection TCP avancée
 -A INPUT -m conntrack --ctstate INVALID -j DROP
@@ -93,11 +66,6 @@ COMMIT
 # ICMP/Ping modéré
 -A INPUT -p icmp --icmp-type echo-request -m length --length 64:1024 -m limit --limit 5/sec -j ACCEPT
 -A INPUT -p icmp --icmp-type echo-request -j DROP
-
-# Limitation UDP générique
--A INPUT -p udp -m limit --limit 100/sec --limit-burst 200 -j ACCEPT
--A INPUT -p udp -j LOG --log-prefix "DROP-UDP: " --log-level 4
--A INPUT -p udp -j DROP
 
 # Journaux pour débogage
 -A INPUT -m conntrack --ctstate INVALID -m limit --limit 5/min --limit-burst 10 -j LOG --log-prefix "Invalid packet: "

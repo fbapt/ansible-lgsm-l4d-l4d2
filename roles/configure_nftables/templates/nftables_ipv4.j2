@@ -1,51 +1,31 @@
 # Table filter pour gérer l'IPv4 uniquement
 table ip filter {
     chain INPUT {
-        # Interdire tout par défaut
         type filter hook input priority filter; policy drop;
 
-        # Autoriser le trafic interne sur l'interface loopback
         iifname "lo" accept
-
-        # Accepter toutes les connexions établies
         ct state established accept
 
-        # Règle pour SSH avec limitation
         tcp dport {{ configure_nftables_ssh_port }} ct state new meter SSHPROTECT { tcp dport limit rate 2/second burst 2 packets } counter accept
 
-        # Limitation pour les serveurs de jeux
-        udp dport { {{ configure_nftables_games_servers_ports }} } ct state new meter UDP_NEW_LIMIT { ip saddr limit rate 5/second burst 10 packets } counter accept
-        udp dport { {{ configure_nftables_games_servers_ports }} } ct state established limit rate 30/second burst 80 packets counter accept
+        udp dport { {{ configure_nftables_games_servers_ports }} } ct state new counter accept
+        udp dport { {{ configure_nftables_games_servers_ports }} } ct state established counter accept
 
-        # Protection contre les paquets UDP avec des tailles non valides
-        udp dport { {{ configure_nftables_games_servers_ports }} } ip length < 40 counter drop
-        udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 30-32 counter drop
-        udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 46 counter drop
-        udp dport { {{ configure_nftables_games_servers_ports }} } ip length == 60 counter drop
-        udp dport { {{ configure_nftables_games_servers_ports }} } ip length > 2500 counter drop
-
-        # Limiter le nombre de connexions TCP par source IP
         meta l4proto tcp ct state new limit rate 20/second burst 20 packets counter accept
         meta l4proto tcp ct state new counter drop
 
-        # Protection contre les paquets invalides
         ct state invalid counter drop
-
-        # Limitation des paquets RST
         tcp flags & rst == rst limit rate 2/second burst 2 packets counter accept
     }
 
     chain FORWARD {
-        # Interdire tout par défaut
         type filter hook forward priority filter; policy drop;
     }
 
     chain OUTPUT {
-        # Autoriser tout par défaut
         type filter hook output priority filter; policy accept;
     }
 
-    # Protection contre le scan de ports (directement dans INPUT)
     chain port-scanning {
         tcp flags rst / fin,syn,rst,ack limit rate 1/second burst 2 packets counter return
         counter drop
@@ -56,18 +36,11 @@ table ip mangle {
     chain PREROUTING {
         type filter hook prerouting priority mangle; policy accept;
 
-        # Protection contre les paquets invalides
         ct state invalid counter drop
-
-        # Limitation des flags TCP non valides
         tcp flags fin,syn / fin,syn counter drop
         tcp flags syn,rst / syn,rst counter drop
         tcp flags fin / fin,ack counter drop
-
-        # Limitation pour ICMP (3 requêtes par seconde)
         ip protocol icmp limit rate 3/second counter accept
-
-        # Protection contre les fragments non valides
         ip frag-off & 8191 != 0 counter drop
     }
 
@@ -80,9 +53,7 @@ table ip raw {
     chain PREROUTING {
         type filter hook prerouting priority raw; policy accept;
 
-        # Limitation pour UDP, éviter le flood
-        udp dport { {{ configure_nftables_games_servers_ports }} } limit rate 50/second counter accept
-        udp dport { {{ configure_nftables_games_servers_ports }} } counter drop
+        udp dport { {{ configure_nftables_games_servers_ports }} } counter accept
     }
 
     chain OUTPUT {
