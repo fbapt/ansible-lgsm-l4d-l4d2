@@ -48,8 +48,11 @@ COMMIT
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m hashlimit --hashlimit-upto 2/sec --hashlimit-burst 5 --hashlimit-mode dstport --hashlimit-name SSHPROTECT -j ACCEPT
 
 # Jeux - Plus de limitation UDP, acceptation directe
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -j ACCEPT
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate ESTABLISHED -j ACCEPT
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+
+# Protéger un serveur de jeu en incluant une limitation du débit des connexions entrantes
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --rsource
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name DEFAULT --rsource -j DROP
 
 # Protection TCP avancée
 -A INPUT -m conntrack --ctstate INVALID -j DROP
