@@ -32,6 +32,13 @@ table ip filter {
         udp dport { {{ configure_nftables_games_servers_ports }} } ct state new \
             add @recent_udp_flood { ip saddr } counter accept
 
+        # Limitation du débit UDP pour les connexions vers les serveurs de jeu (110 paquets/sec max)
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip protocol udp ct state new,established \
+            meter game_established_limit { ip saddr limit rate 110/second burst 130 packets } accept
+
+        # Rejet des connexions UDP non limitées par hashlimit
+        udp dport { {{ configure_nftables_games_servers_ports }} } ip protocol udp ct state new,established drop
+
         # Accepter les connexions déjà établies vers les ports de jeu
         udp dport { {{ configure_nftables_games_servers_ports }} } ct state established counter accept
 

@@ -47,12 +47,17 @@ COMMIT
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 10 --hitcount 10 -j DROP
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m hashlimit --hashlimit-upto 2/sec --hashlimit-burst 5 --hashlimit-mode dstport --hashlimit-name SSHPROTECT -j ACCEPT
 
-# Jeux - Plus de limitation UDP, acceptation directe
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+# Serveur de jeu - Limitation du débit UDP par hashlimit
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -m hashlimit --hashlimit-upto 110/sec --hashlimit-burst 130 --hashlimit-mode srcip,srcport,dstport --hashlimit-name GAME_ESTABLISHED_LIMIT -j ACCEPT
 
-# Protéger un serveur de jeu en incluant une limitation du débit des connexions entrantes
+# Rejet des connexions non limitées par hashlimit
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -j DROP
+
+# Protéger un serveur de jeu - Limitation du débit des connexions entrantes avec recent
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --rsource
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name DEFAULT --rsource -j DROP
+
+# Mise à jour du `recent` et application du rejet si trop de connexions
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 5 --name DEFAULT --rsource -j DROP
 
 # Protection TCP avancée
 -A INPUT -m conntrack --ctstate INVALID -j DROP
