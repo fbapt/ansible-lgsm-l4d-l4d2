@@ -45,7 +45,6 @@ COMMIT
 # SSH avec rate-limiting et anti-brute-force
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --set
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 10 --hitcount 10 -j DROP
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m hashlimit --hashlimit-upto 30/minute --hashlimit-burst 15 --hashlimit-mode srcip --hashlimit-name SSHPROTECT -j ACCEPT
 
 # Serveur de jeu - Limitation du débit UDP par hashlimit
 -A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -m hashlimit --hashlimit-upto 110/sec --hashlimit-burst 130 --hashlimit-mode srcip,srcport,dstport --hashlimit-name GAME_ESTABLISHED_LIMIT -j ACCEPT

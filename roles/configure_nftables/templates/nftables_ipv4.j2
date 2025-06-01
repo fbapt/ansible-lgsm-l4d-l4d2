@@ -19,14 +19,9 @@ table ip filter {
         # Accepter les paquets qui font partie d'une connexion établie ou déjà autorisée
         ct state established accept
 
-        # Autoriser SSH sans limitation
-        tcp dport {{ configure_nftables_ssh_port }} ct state new accept
-
-        # Accepter jusqu'à 30 connexions SSH par minute avec burst 15
-        tcp dport {{ configure_nftables_ssh_port }} ct state new limit rate 30/minute burst 15 packets accept
-
-        # Drop si plus de 10 connexions SSH nouvelles en 10 secondes
-        tcp dport {{ configure_nftables_ssh_port }} ct state new limit rate 10/second burst 10 packets drop
+        # Limite les connexions SSH
+        tcp dport {{ configure_nftables_ssh_port }} ct state new limit rate 10/minute burst 10 packets accept
+        tcp dport {{ configure_nftables_ssh_port }} ct state new drop
 
         # Limitation des connexions UDP par IP (10 connexions par minute) vers les ports de jeu
         # 1ère règle : Si une IP dépasse la limite, elle est bloquée
