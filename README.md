@@ -4,7 +4,7 @@
 
 # Example of a basic ansible configuration
 
-## 1/ On the ansible controller (tested on Debian 12)
+## 1/ On the ansible controller (tested on Debian 13)
 
 As root user :
 
@@ -168,10 +168,10 @@ Load key with pageant --> Add key
 
 Comment line in file ansible.cfg  --> #vault_password_file=.vault_pass
 
-change password (example for debian12testing)
+change password (example for debian13testing)
 
 ```bash
-ansible-vault rekey host_vars/debian12testing/vault.yml
+ansible-vault rekey host_vars/debian13testing/vault.yml
 ```
 
 Uncomment line in file ansible.cfg  --> vault_password_file=.vault_pass
@@ -214,7 +214,7 @@ Edit .vault_pass with the new password
 
 ## 2/ Installation of left4dead1 and/or left4dead2 dedicated servers
 
-On the ansible controller, as ansible user run playbooks on a Debian 11 or 12 :
+On the ansible controller, as ansible user run playbooks on a Debian 11/12/13 :
 
 Install left4dead1 and/or left4dead2 dedicated servers :
 
@@ -237,9 +237,9 @@ ansible-playbook performance.yml --limit production
 
 ## About
 
-Playbooks have been tested with packages of ansible community (9.4.0), ansible-core (2.16.6) and ansible-lint (24.2.2).
+Playbooks have been tested with packages of ansible community, ansible-core and ansible-lint.
 
-Tested on Debian 11 and 12
+Tested on Debian 11/12/13
 
 Documentation of lgsm :
 

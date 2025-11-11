@@ -10,4 +10,3 @@ performance_useful_packages:
   - lsof
   - strace
   - dnsutils
-  - neofetch
