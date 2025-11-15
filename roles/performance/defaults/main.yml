@@ -9,4 +9,4 @@ performance_useful_packages:
   - traceroute
   - lsof
   - strace
-  - dnsutils
+  - bind9-dnsutils
