@@ -32,8 +32,8 @@ LoginGraceTime 30
 PermitRootLogin no
 AuthenticationMethods publickey
 StrictModes yes
-MaxAuthTries 3
-MaxSessions 2
+MaxAuthTries 6
+MaxSessions 10
 
 PubkeyAuthentication yes
 
@@ -93,15 +93,15 @@ X11Forwarding no
 PermitTTY yes
 PrintMotd no
 PrintLastLog yes
-TCPKeepAlive no
+TCPKeepAlive yes
 PermitUserEnvironment no
 Compression no
 ClientAliveInterval 300
-ClientAliveCountMax 0
+ClientAliveCountMax 2
 UseDNS no
 PidFile /run/sshd.pid
-PerSourceMaxStartups 3
-MaxStartups 10:30:60
+PerSourceMaxStartups none
+MaxStartups 10:30:100
 #PermitTunnel no
 #ChrootDirectory none
 #VersionAddendum none
