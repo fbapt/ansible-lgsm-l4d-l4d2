@@ -26,6 +26,6 @@
 
 - name: Enable iptables
   ansible.builtin.systemd:
-    name: iptables
+    name: netfilter-persistent
     enabled: true
   when: not ansible_check_mode

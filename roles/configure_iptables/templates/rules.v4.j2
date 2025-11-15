@@ -1,3 +1,57 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback
+-A INPUT -i lo -j ACCEPT
+
+# Connexions etablies
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Paquets invalides
+-A INPUT -m conntrack --ctstate INVALID -j DROP
+
+# Regle SSH suivi des tentatives
+-A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} --syn -m conntrack --ctstate NEW -m recent --set --name SSH_ATT --rsource
+
+# Détection SSH bruteforce
+-A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} --syn -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name SSH_ATT --rsource -j DROP
+
+# Limite normale SSH
+-A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m limit --limit 20/min --limit-burst 20 -j ACCEPT
+
+# Log limite avant drop
+-A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m limit --limit 2/min --limit-burst 4 -j LOG --log-prefix "SSH brute attempt: " --log-level 7
+
+# Drop final SSH
+-A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -j DROP
+
+# L4D1 L4D2
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -m hashlimit --hashlimit-upto 80/second --hashlimit-burst 150 --hashlimit-mode srcip,dstport --hashlimit-name l4d_udp_limit -j ACCEPT
+-A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -j DROP
+
+# Blocage complet ICMP
+-A INPUT -p icmp -j DROP
+
+# Protection scans TCP
+-A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+-A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+-A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+-A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+-A INPUT -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+-A INPUT -p tcp --tcp-flags ACK,FIN FIN -j DROP
+-A INPUT -p tcp --tcp-flags ACK,PSH PSH -j DROP
+-A INPUT -p tcp --tcp-flags ACK,URG URG -j DROP
+
+# Protection SYN flood
+-A INPUT -p tcp --syn -m limit --limit 50/second --limit-burst 200 -j ACCEPT
+
+# Logging limite global
+-A INPUT -m limit --limit 5/min -j LOG --log-prefix "iptables DROP: " --log-level 7
+
+COMMIT
+
 *mangle
 :PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
@@ -5,80 +59,7 @@
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
 
-# Suppression des connexions invalides
--A PREROUTING -m conntrack --ctstate INVALID -j DROP
+# Priorité trafic UDP L4D1 L4D2
+-A OUTPUT -p udp -m multiport --sports {{ configure_iptables_games_servers_ports }} -j TOS --set-tos 0x10
 
-# Anti-SYN sans SYN flag
--A PREROUTING -p tcp ! --tcp-flags FIN,SYN,RST,ACK SYN -m conntrack --ctstate NEW -j DROP
-
-# Filtrage MSS anormal
--A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
-
-# Anti TCP flags suspects (stealth scan)
--A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
--A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
--A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
--A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
--A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
--A PREROUTING -p tcp --tcp-flags PSH,ACK PSH -j DROP
--A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
-
-# Limitation ICMP
--A PREROUTING -p icmp -m hashlimit --hashlimit-upto 3/sec --hashlimit-burst 5 --hashlimit-mode srcip --hashlimit-name icmp -j ACCEPT
-
-# Drop des fragments
--A PREROUTING -f -j DROP
-COMMIT
-
-*filter
-:INPUT DROP [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT ACCEPT [0:0]
-:port-scanning - [0:0]
-
-# Interface loopback
--A INPUT -i lo -j ACCEPT
-
-# Connexions établies/relatives
--A INPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-# SSH avec rate-limiting et anti-brute-force
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --set
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 10 --hitcount 10 -j DROP
-
-# Serveur de jeu - Limitation du débit UDP par hashlimit
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -m hashlimit --hashlimit-upto 110/sec --hashlimit-burst 130 --hashlimit-mode srcip,srcport,dstport --hashlimit-name GAME_ESTABLISHED_LIMIT -j ACCEPT
-
-# Rejet des connexions non limitées par hashlimit
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -j DROP
-
-# Protéger un serveur de jeu - Limitation du débit des connexions entrantes avec recent
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --rsource
-
-# Mise à jour du `recent` et application du rejet si trop de connexions
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 5 --name DEFAULT --rsource -j DROP
-
-# Protection TCP avancée
--A INPUT -m conntrack --ctstate INVALID -j DROP
--A INPUT -p tcp -m connlimit --connlimit-above 150 --connlimit-mask 32 --connlimit-saddr -j REJECT --reject-with tcp-reset
--A INPUT -p tcp --tcp-flags RST RST -m limit --limit 10/sec --limit-burst 5 -j ACCEPT
--A INPUT -p tcp --tcp-flags RST RST -j DROP
--A INPUT -p tcp -m conntrack --ctstate NEW -m limit --limit 20/sec --limit-burst 20 -j ACCEPT
--A INPUT -p tcp -m conntrack --ctstate NEW -j DROP
-
-# Protection port scanning
--A port-scanning -p tcp --tcp-flags FIN,SYN,RST,ACK RST -m limit --limit 10/sec --limit-burst 5 -j RETURN
--A port-scanning -j DROP
-
-# ICMP/Ping modéré
--A INPUT -p icmp --icmp-type echo-request -m length --length 64:1024 -m limit --limit 5/sec -j ACCEPT
--A INPUT -p icmp --icmp-type echo-request -j DROP
-
-# Journaux pour débogage
--A INPUT -m conntrack --ctstate INVALID -m limit --limit 5/min --limit-burst 10 -j LOG --log-prefix "Invalid packet: "
--A INPUT -m conntrack --ctstate NEW -m limit --limit 5/min --limit-burst 10 -j LOG --log-prefix "New TCP connection dropped: "
-
-# Protection SYN flood
--A INPUT -p tcp --syn -m connlimit --connlimit-above 10 -j DROP
--A INPUT -p tcp --syn -m conntrack --ctstate NEW -m limit --limit 20/sec --limit-burst 100 -j ACCEPT
 COMMIT

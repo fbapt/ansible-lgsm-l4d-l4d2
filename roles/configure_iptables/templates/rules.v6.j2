@@ -1,14 +1,21 @@
 *filter
-
-# Disallow INPUT/FORWARD as the default filter policy
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
 
-# Allow internal traffic on the loopback device
+# Loopback
 -A INPUT -i lo -j ACCEPT
 
-# Accepts all established inbound connections
--A INPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
+# Connexions etablies ou liees
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# ICMPv6 minimal pour NDP et MTU
+-A INPUT -p ipv6-icmp --icmpv6-type destination-unreachable -j ACCEPT
+-A INPUT -p ipv6-icmp --icmpv6-type packet-too-big -j ACCEPT
+-A INPUT -p ipv6-icmp --icmpv6-type time-exceeded -j ACCEPT
+-A INPUT -p ipv6-icmp --icmpv6-type neighbor-solicitation -j ACCEPT
+-A INPUT -p ipv6-icmp --icmpv6-type neighbor-advertisement -j ACCEPT
+-A INPUT -p ipv6-icmp --icmpv6-type router-solicitation -j ACCEPT
+-A INPUT -p ipv6-icmp --icmpv6-type router-advertisement -j ACCEPT
 
 COMMIT

@@ -1,0 +1,74 @@
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+
+    chain input {
+        type filter hook input priority 0; policy drop;
+
+        # Loopback
+        iif "lo" accept
+
+        # Connexions établies / liées
+        ct state established,related accept
+
+        # Paquets invalides
+        ct state invalid drop
+
+        # SSH Acceptation limitée
+        tcp dport {{ configure_nftables_ssh_port }} ct state new limit rate 20/minute burst 20 packets accept
+
+        # SSH Logs limités si trop de tentatives
+        tcp dport {{ configure_nftables_ssh_port }} ct state new limit rate 2/minute burst 4 packets log prefix "SSH brute attempt: " level info
+
+        # SSH DROP
+        tcp dport {{ configure_nftables_ssh_port }} ct state new drop
+
+        # TCP scan protection
+        tcp flags fin|syn|rst|psh|ack|urg drop
+        tcp flags syn|fin drop
+        tcp flags syn|rst drop
+        tcp flags fin|rst drop
+        tcp flags fin|ack drop
+        tcp flags psh|ack drop
+        tcp flags ack|urg drop
+
+        # SYN flood protection
+        tcp flags syn limit rate 50/second burst 200 packets accept
+
+        # UDP Game Servers
+        udp dport { {{ configure_nftables_games_servers_ports }} } ct state new,established limit rate 80/second burst 150 packets accept
+        udp dport { {{ configure_nftables_games_servers_ports }} } drop
+
+        # ICMPv4
+        icmp type echo-request drop
+
+        # ICMPv6 
+        ip6 nexthdr ipv6-icmp icmpv6 type {
+            destination-unreachable,
+            packet-too-big,
+            time-exceeded,
+            nd-router-solicit,
+            nd-router-advert,
+            nd-neighbor-solicit,
+            nd-neighbor-advert
+        } accept
+
+        # Logging limité global
+        limit rate 5/minute burst 5 packets log prefix "DROP: " level info
+    }
+
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+    }
+
+
+    chain output {
+        type filter hook output priority 0; policy accept;
+
+        # game servers QoS
+        udp sport { {{ configure_nftables_games_servers_ports }} } meta priority set 0:10
+    }
+}

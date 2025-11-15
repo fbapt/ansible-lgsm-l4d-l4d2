@@ -26,24 +26,8 @@
   block:
     - name: Generate nftables config
       ansible.builtin.template:
-        src: nftables_main.j2
+        src: nftables.j2
         dest: /etc/nftables.conf
-        owner: root
-        group: root
-        mode: "0644"
-
-    - name: Generate nftables config for IPv4
-      ansible.builtin.template:
-        src: nftables_ipv4.j2
-        dest: /etc/nftables_ipv4.conf
-        owner: root
-        group: root
-        mode: "0644"
-
-    - name: Generate nftables config for IPv6
-      ansible.builtin.template:
-        src: nftables_ipv6.j2
-        dest: /etc/nftables_ipv6.conf
         owner: root
         group: root
         mode: "0644"
