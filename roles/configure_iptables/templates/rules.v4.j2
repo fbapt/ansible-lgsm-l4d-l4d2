@@ -1,3 +1,4 @@
+{% set game_ports_list = configure_iptables_games_servers_ports.split(',') %}
 *filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
@@ -6,35 +7,24 @@
 # Loopback
 -A INPUT -i lo -j ACCEPT
 
-# Connexions etablies
+# Connexions établies
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Paquets invalides
 -A INPUT -m conntrack --ctstate INVALID -j DROP
 
-# Regle SSH suivi des tentatives
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} --syn -m conntrack --ctstate NEW -m recent --set --name SSH_ATT --rsource
+# SSH acceptation limitée (safe)
+-A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} --syn -m conntrack --ctstate NEW -m limit --limit 20/min --limit-burst 20 -j ACCEPT
+-A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} --syn -m conntrack --ctstate NEW -m limit --limit 2/min --limit-burst 4 -j LOG --log-prefix "SSH brute attempt: " --log-level 7
+-A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} --syn -m conntrack --ctstate NEW -j ACCEPT
 
-# Détection SSH bruteforce
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} --syn -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name SSH_ATT --rsource -j DROP
+# UDP Game servers - limitation par IP source + port (hashlimit)
+{% for port in game_ports_list %}
+-A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW,ESTABLISHED -m hashlimit --hashlimit 80/second --hashlimit-burst 150 --hashlimit-mode srcip,dstport --hashlimit-name udp_{{ port }} -j ACCEPT
+-A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+{% endfor %}
 
-# Limite normale SSH
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m limit --limit 20/min --limit-burst 20 -j ACCEPT
-
-# Log limite avant drop
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m limit --limit 2/min --limit-burst 4 -j LOG --log-prefix "SSH brute attempt: " --log-level 7
-
-# Drop final SSH
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -j DROP
-
-# L4D1 L4D2
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -m conntrack --ctstate NEW,ESTABLISHED -m hashlimit --hashlimit-upto 80/second --hashlimit-burst 150 --hashlimit-mode srcip,dstport --hashlimit-name l4d_udp_limit -j ACCEPT
--A INPUT -p udp -m multiport --dports {{ configure_iptables_games_servers_ports }} -j DROP
-
-# Blocage complet ICMP
--A INPUT -p icmp -j DROP
-
-# Protection scans TCP
+# TCP scan protection
 -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
 -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
@@ -44,10 +34,16 @@
 -A INPUT -p tcp --tcp-flags ACK,PSH PSH -j DROP
 -A INPUT -p tcp --tcp-flags ACK,URG URG -j DROP
 
-# Protection SYN flood
+# SYN flood protection
 -A INPUT -p tcp --syn -m limit --limit 50/second --limit-burst 200 -j ACCEPT
 
-# Logging limite global
+# ICMP minimal
+-A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+-A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
+-A INPUT -p icmp --icmp-type parameter-problem -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-request -j DROP
+
+# Logging limité global
 -A INPUT -m limit --limit 5/min -j LOG --log-prefix "iptables DROP: " --log-level 7
 
 COMMIT
@@ -59,7 +55,9 @@ COMMIT
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
 
-# Priorité trafic UDP L4D1 L4D2
--A OUTPUT -p udp -m multiport --sports {{ configure_iptables_games_servers_ports }} -j TOS --set-tos 0x10
+# Priorité du trafic UDP en sortie (QoS)
+{% for port in game_ports_list %}
+-A OUTPUT -p udp --sport {{ port }} -j DSCP --set-dscp 0x10
+{% endfor %}
 
 COMMIT

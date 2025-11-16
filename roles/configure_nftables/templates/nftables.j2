@@ -1,8 +1,15 @@
 #!/usr/sbin/nft -f
-
 flush ruleset
 
+define ssh_port   = {{ configure_nftables_ssh_port }}
+define game_ports = { {{ configure_nftables_games_servers_ports }} }
+
 table inet filter {
+
+    set games_ports {
+        type inet_service
+        elements = $game_ports
+    }
 
     chain input {
         type filter hook input priority 0; policy drop;
@@ -17,58 +24,58 @@ table inet filter {
         ct state invalid drop
 
         # SSH Acceptation limitée
-        tcp dport {{ configure_nftables_ssh_port }} ct state new limit rate 20/minute burst 20 packets accept
+        tcp dport $ssh_port ct state new limit rate 20/minute burst 20 packets accept
 
         # SSH Logs limités si trop de tentatives
-        tcp dport {{ configure_nftables_ssh_port }} ct state new limit rate 2/minute burst 4 packets log prefix "SSH brute attempt: " level info
+        tcp dport $ssh_port ct state new limit rate 2/minute burst 4 packets log prefix "SSH brute attempt: " level info
 
         # SSH DROP
-        tcp dport {{ configure_nftables_ssh_port }} ct state new drop
+        tcp dport $ssh_port ct state new drop
+
+        # UDP Game servers
+        udp dport @games_ports ct state new,established accept
 
         # TCP scan protection
-        tcp flags fin|syn|rst|psh|ack|urg drop
-        tcp flags syn|fin drop
-        tcp flags syn|rst drop
-        tcp flags fin|rst drop
-        tcp flags fin|ack drop
-        tcp flags psh|ack drop
-        tcp flags ack|urg drop
+        tcp flags & (fin|syn|rst|psh|ack|urg) == 0 drop
+        tcp flags & (fin|syn) == (fin|syn) drop
+        tcp flags & (syn|rst) == (syn|rst) drop
+        tcp flags & (fin|rst) == (fin|rst) drop
+        tcp flags & (fin|ack) == (fin|ack) drop
+        tcp flags & (psh|ack) == (psh|ack) drop
+        tcp flags & (ack|urg) == (ack|urg) drop
 
         # SYN flood protection
         tcp flags syn limit rate 50/second burst 200 packets accept
 
-        # UDP Game Servers
-        udp dport { {{ configure_nftables_games_servers_ports }} } ct state new,established limit rate 80/second burst 150 packets accept
-        udp dport { {{ configure_nftables_games_servers_ports }} } drop
-
-        # ICMPv4
-        icmp type echo-request drop
-
-        # ICMPv6 
-        ip6 nexthdr ipv6-icmp icmpv6 type {
+        # ICMPv4 minimal
+        ip protocol icmp icmp type {
             destination-unreachable,
-            packet-too-big,
             time-exceeded,
-            nd-router-solicit,
-            nd-router-advert,
-            nd-neighbor-solicit,
-            nd-neighbor-advert
+            parameter-problem
         } accept
+        ip protocol icmp icmp type echo-request drop
+
+        # ICMPv6 minimal
+        ip6 nexthdr ipv6-icmp icmpv6 type destination-unreachable accept
+        ip6 nexthdr ipv6-icmp icmpv6 type packet-too-big accept
+        ip6 nexthdr ipv6-icmp icmpv6 type time-exceeded accept
+        ip6 nexthdr ipv6-icmp icmpv6 type parameter-problem accept
+        ip6 nexthdr ipv6-icmp icmpv6 type nd-router-solicit accept
+        ip6 nexthdr ipv6-icmp icmpv6 type nd-router-advert accept
+        ip6 nexthdr ipv6-icmp icmpv6 type nd-neighbor-solicit accept
+        ip6 nexthdr ipv6-icmp icmpv6 type nd-neighbor-advert accept
+        ip6 nexthdr ipv6-icmp drop
 
         # Logging limité global
         limit rate 5/minute burst 5 packets log prefix "DROP: " level info
     }
 
-
-    chain forward {
-        type filter hook forward priority 0; policy drop;
+    chain output {
+        type filter hook output priority 0; policy accept
+        udp sport @games_ports meta priority set 0:10
     }
 
-
-    chain output {
-        type filter hook output priority 0; policy accept;
-
-        # game servers QoS
-        udp sport { {{ configure_nftables_games_servers_ports }} } meta priority set 0:10
+    chain forward {
+        type filter hook forward priority 0; policy drop
     }
 }
