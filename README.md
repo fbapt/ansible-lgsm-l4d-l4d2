@@ -226,11 +226,6 @@ ansible-playbook lgsm.yml --limit production
 (optional) configure hardening firewall + ssh with creation of ssh keys (sshd_config is restricted to IPV4 and accept only ssh keys) :
 
 ```bash
-ansible-playbook configure_ssh_nftables.yml --limit production
-```
-or
-
-```bash
 ansible-playbook configure_ssh_iptables.yml --limit production
 ```
 
