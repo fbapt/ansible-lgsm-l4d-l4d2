@@ -214,7 +214,7 @@ Edit .vault_pass with the new password
 
 ## 2/ Installation of left4dead1 and/or left4dead2 dedicated servers
 
-On the ansible controller, as ansible user run playbooks on a Debian 11/12/13 :
+On the ansible controller, as ansible user run playbooks on a Debian 13 :
 
 Install left4dead1 and/or left4dead2 dedicated servers :
 
@@ -244,7 +244,7 @@ ansible-playbook performance.yml --limit production
 
 Playbooks have been tested with packages of ansible community, ansible-core and ansible-lint.
 
-Tested on Debian 11/12/13
+Tested on Debian 13
 
 Documentation of lgsm :
 
