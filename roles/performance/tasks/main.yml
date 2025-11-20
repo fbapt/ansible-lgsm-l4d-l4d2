@@ -12,7 +12,7 @@
   args:
     executable: /usr/bin/bash
   changed_when: false
-  register: physical
+  register: performance_physical
 
 - name: Install useful packages
   ansible.builtin.package:
@@ -40,7 +40,7 @@
     mode: "0644"
     backup: true
   notify: Update-grub
-  when: physical.stdout == ""
+  when: performance_physical.stdout == ""
 
 - name: Copy systctl config
   ansible.builtin.copy:
@@ -57,7 +57,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: physical.stdout == ""
+  when: performance_physical.stdout == ""
 
 - name: Get physical interface name
   ansible.builtin.shell: |
@@ -65,7 +65,7 @@
     ip -br l | awk '$1 !~ "lo|vir|wl" { print $1}'
   args:
     executable: /usr/bin/bash
-  register: physical_interface
+  register: performance_physical_interface
   changed_when: false
 
 - name: Crontab configuration hyperthreading
@@ -75,14 +75,14 @@
     special_time: reboot
     job: "sleep 30 && echo d | /root/toggleHT.sh"
     state: present
-  when: physical.stdout == ""
+  when: performance_physical.stdout == ""
 
 - name: Crontab configuration udp performance
   ansible.builtin.cron:
     name: Enable udp gro forwarding to improve udp performance
     user: root
     special_time: reboot
-    job: "sleep 30 && /usr/sbin/ethtool -K {{ physical_interface.stdout }} rx-udp-gro-forwarding on"
+    job: "sleep 30 && /usr/sbin/ethtool -K {{ performance_physical_interface.stdout }} rx-udp-gro-forwarding on"
     state: present
 
 - name: Crontab configuration udp throughput
@@ -90,5 +90,5 @@
     name: Disable generic-receive-offload, generic-segmentation-offload for UDP throughput
     user: root
     special_time: reboot
-    job: "sleep 35 && /usr/sbin/ethtool -K {{ physical_interface.stdout }} gro off gso off"
+    job: "sleep 35 && /usr/sbin/ethtool -K {{ performance_physical_interface.stdout }} gro off gso off"
     state: present
