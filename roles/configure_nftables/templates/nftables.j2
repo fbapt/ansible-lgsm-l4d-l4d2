@@ -1,18 +1,42 @@
 #!/usr/sbin/nft -f
 flush ruleset
 
-define ssh_port   = {{ configure_nftables_ssh_port }}
-define game_ports = { {{ configure_nftables_games_servers_ports }} }
+define ssh_port = {{ configure_nftables_ssh_port }}
+define games_ports = { {{ configure_nftables_games_servers_ports }} }
 
 table inet filter {
 
-    set games_ports {
-        type inet_service
-        elements = $game_ports
+    set ssh_recent_ban {
+        type ipv4_addr;
+        timeout 300s;
+        flags timeout;
+    }
+
+    set lgsm_recent_ban {
+        type ipv4_addr;
+        timeout 60s;
+        flags timeout;
+    }
+
+    chain rate_ssh {
+        tcp dport $ssh_port ct state new limit rate 2/minute burst 10 packets return
+
+        add @ssh_recent_ban { ip saddr }
+        drop
+    }
+
+    chain rate_lgsm {
+        udp dport $games_ports ct state new limit rate 15/minute burst 15 packets return
+
+        add @lgsm_recent_ban { ip saddr }
+        drop
     }
 
     chain input {
         type filter hook input priority 0; policy drop;
+
+        ip saddr @ssh_recent_ban drop
+        ip saddr @lgsm_recent_ban drop
 
         # Loopback
         iif "lo" accept
@@ -23,19 +47,15 @@ table inet filter {
         # Paquets invalides
         ct state invalid drop
 
-        # SSH Acceptation limitée
-        tcp dport $ssh_port ct state new limit rate 20/minute burst 20 packets accept
+        # ---------------- SSH ----------------
+        tcp dport $ssh_port ct state new jump rate_ssh
+        tcp dport $ssh_port ct state new accept
 
-        # SSH Logs limités si trop de tentatives
-        tcp dport $ssh_port ct state new limit rate 2/minute burst 4 packets log prefix "SSH brute attempt: " level info
+        # ---------------- GAME SERVERS UDP ----------------
+        udp dport $games_ports ct state new jump rate_lgsm
+        udp dport $games_ports ct state new,established limit rate 80/second burst 150 packets accept
 
-        # SSH DROP
-        tcp dport $ssh_port ct state new drop
-
-        # UDP Game servers
-        udp dport @games_ports ct state new,established accept
-
-        # TCP scan protection
+        # --------------- PROTECTIONS TCP ---------------
         tcp flags & (fin|syn|rst|psh|ack|urg) == 0 drop
         tcp flags & (fin|syn) == (fin|syn) drop
         tcp flags & (syn|rst) == (syn|rst) drop
@@ -46,36 +66,40 @@ table inet filter {
 
         # SYN flood protection
         tcp flags syn limit rate 50/second burst 200 packets accept
+        tcp flags syn drop
 
-        # ICMPv4 minimal
+        # ----------------- ICMP minimal safe -----------------
         ip protocol icmp icmp type {
             destination-unreachable,
             time-exceeded,
             parameter-problem
         } accept
+
         ip protocol icmp icmp type echo-request drop
 
-        # ICMPv6 minimal
-        ip6 nexthdr ipv6-icmp icmpv6 type destination-unreachable accept
-        ip6 nexthdr ipv6-icmp icmpv6 type packet-too-big accept
-        ip6 nexthdr ipv6-icmp icmpv6 type time-exceeded accept
-        ip6 nexthdr ipv6-icmp icmpv6 type parameter-problem accept
-        ip6 nexthdr ipv6-icmp icmpv6 type nd-router-solicit accept
-        ip6 nexthdr ipv6-icmp icmpv6 type nd-router-advert accept
-        ip6 nexthdr ipv6-icmp icmpv6 type nd-neighbor-solicit accept
-        ip6 nexthdr ipv6-icmp icmpv6 type nd-neighbor-advert accept
+        # IPv6
+        ip6 nexthdr ipv6-icmp icmpv6 type {
+            destination-unreachable,
+            packet-too-big,
+            time-exceeded,
+            parameter-problem,
+            nd-router-solicit,
+            nd-router-advert,
+            nd-neighbor-solicit,
+            nd-neighbor-advert
+        } accept
+
         ip6 nexthdr ipv6-icmp drop
 
-        # Logging limité global
+        # Logging limité
         limit rate 5/minute burst 5 packets log prefix "DROP: " level info
     }
 
     chain output {
-        type filter hook output priority 0; policy accept
-        udp sport @games_ports meta priority set 0:10
+        type filter hook output priority 0; policy accept;
     }
 
     chain forward {
-        type filter hook forward priority 0; policy drop
+        type filter hook forward priority 0; policy drop;
     }
 }
