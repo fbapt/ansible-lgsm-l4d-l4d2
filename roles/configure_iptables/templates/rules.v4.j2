@@ -14,9 +14,9 @@
 -A INPUT -m conntrack --ctstate INVALID -j DROP
 
 # SSH bruteforce protection
--A INPUT -i ! lo -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --set --name SSH --rsource
--A INPUT -i ! lo -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 300 --hitcount 10 --name SSH --rsource -j DROP
--A INPUT -i ! lo -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT ! -i lo -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --set --name SSH --rsource
+-A INPUT ! -i lo -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 300 --hitcount 10 --name SSH --rsource -j DROP
+-A INPUT ! -i lo -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -j ACCEPT
 
 # UDP Game servers - rate-limit type LinuxGSM (recent)
 {% for port in game_ports_list %}
