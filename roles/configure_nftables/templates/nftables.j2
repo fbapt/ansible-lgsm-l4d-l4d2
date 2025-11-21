@@ -6,76 +6,75 @@ define games_ports = { {{ configure_nftables_games_servers_ports }} }
 
 table inet filter {
 
-    set ssh_recent_ban {
-        type ipv4_addr;
-        timeout 300s;
-        flags timeout;
-    }
-
-    set lgsm_recent_ban {
+    set ssh_recent {
         type ipv4_addr;
         timeout 60s;
         flags timeout;
     }
 
-    chain rate_ssh {
-        tcp dport $ssh_port ct state new limit rate 2/minute burst 10 packets return
-
-        add @ssh_recent_ban { ip saddr }
-        drop
+    set lgsm_recent {
+        type ipv4_addr;
+        timeout 60s;
+        flags timeout;
     }
 
-    chain rate_lgsm {
-        udp dport $games_ports ct state new limit rate 15/minute burst 15 packets return
+    # Rate-limit SSH
+    chain ssh_bruteforce {
+        ip saddr @ssh_recent limit rate over 30/minute drop
+        add @ssh_recent { ip saddr }
+        
+        return
+    }
 
-        add @lgsm_recent_ban { ip saddr }
-        drop
+    # Rate-limit LinuxGSM
+    chain lgsm_bruteforce {
+        ip saddr @lgsm_recent limit rate over 15/minute drop
+        add @lgsm_recent { ip saddr }
+        return
     }
 
     chain input {
         type filter hook input priority 0; policy drop;
 
-        ip saddr @ssh_recent_ban drop
-        ip saddr @lgsm_recent_ban drop
-
         # Loopback
         iif "lo" accept
 
-        # Connexions établies / liées
+        # Connexions établies
         ct state established,related accept
 
         # Paquets invalides
         ct state invalid drop
 
-        # ---------------- SSH ----------------
-        tcp dport $ssh_port ct state new jump rate_ssh
+        # SSH
+        tcp dport $ssh_port ct state new jump ssh_bruteforce
         tcp dport $ssh_port ct state new accept
 
-        # ---------------- GAME SERVERS UDP ----------------
-        udp dport $games_ports ct state new jump rate_lgsm
-        udp dport $games_ports ct state new,established limit rate 80/second burst 150 packets accept
+        # GAME SERVERS UDP
+        udp dport $games_ports ct state new jump lgsm_bruteforce
 
-        # --------------- PROTECTIONS TCP ---------------
+        # UDP GAME SERVERS hashlimit
+        udp dport $games_ports ct state new,established limit rate 80/second burst 150 packets accept
+        udp dport $games_ports ct state new,established accept
+
+        # TCP scan protection
         tcp flags & (fin|syn|rst|psh|ack|urg) == 0 drop
-        tcp flags & (fin|syn) == (fin|syn) drop
+        tcp flags & (fin|psh|urg) == (fin|psh|urg) drop
+        tcp flags & (fin|syn|rst|psh|ack|urg) == (fin|syn|rst|psh|ack|urg) drop
         tcp flags & (syn|rst) == (syn|rst) drop
-        tcp flags & (fin|rst) == (fin|rst) drop
-        tcp flags & (fin|ack) == (fin|ack) drop
-        tcp flags & (psh|ack) == (psh|ack) drop
-        tcp flags & (ack|urg) == (ack|urg) drop
+        tcp flags & (syn|fin) == (syn|fin) drop
 
         # SYN flood protection
         tcp flags syn limit rate 50/second burst 200 packets accept
         tcp flags syn drop
 
-        # ----------------- ICMP minimal safe -----------------
+        # ICMP minimal safe
+        ip protocol icmp icmp type echo-request limit rate 1/second accept
+        ip protocol icmp icmp type echo-request drop
         ip protocol icmp icmp type {
             destination-unreachable,
             time-exceeded,
             parameter-problem
         } accept
-
-        ip protocol icmp icmp type echo-request drop
 
         # IPv6
         ip6 nexthdr ipv6-icmp icmpv6 type {
@@ -91,8 +90,6 @@ table inet filter {
 
         ip6 nexthdr ipv6-icmp drop
 
-        # Logging limité
-        limit rate 5/minute burst 5 packets log prefix "DROP: " level info
     }
 
     chain output {
