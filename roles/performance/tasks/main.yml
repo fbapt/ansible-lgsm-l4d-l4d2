@@ -76,19 +76,3 @@
     job: "sleep 30 && echo d | /root/toggleHT.sh"
     state: present
   when: performance_physical.stdout == ""
-
-- name: Crontab configuration udp performance
-  ansible.builtin.cron:
-    name: Enable udp gro forwarding to improve udp performance
-    user: root
-    special_time: reboot
-    job: "sleep 30 && /usr/sbin/ethtool -K {{ performance_physical_interface.stdout }} rx-udp-gro-forwarding on"
-    state: present
-
-- name: Crontab configuration udp throughput
-  ansible.builtin.cron:
-    name: Disable generic-receive-offload, generic-segmentation-offload for UDP throughput
-    user: root
-    special_time: reboot
-    job: "sleep 35 && /usr/sbin/ethtool -K {{ performance_physical_interface.stdout }} gro off gso off"
-    state: present
