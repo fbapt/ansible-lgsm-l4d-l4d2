@@ -7,25 +7,23 @@ define games_ports = { {{ configure_nftables_games_servers_ports }} }
 table inet filter {
 
     set ssh_recent {
-        type ipv4_addr;
-        timeout 60s;
-        flags timeout;
+        type ipv4_addr
+        timeout 60s
+        flags timeout
     }
 
     set lgsm_recent {
-        type ipv4_addr;
-        timeout 60s;
-        flags timeout;
+        type ipv4_addr
+        timeout 60s
+        flags timeout
     }
 
-    # Rate-limit SSH
     chain ssh_bruteforce {
         ip saddr @ssh_recent limit rate over 30/minute drop
         add @ssh_recent { ip saddr }
         return
     }
 
-    # Rate-limit LinuxGSM
     chain lgsm_bruteforce {
         ip saddr @lgsm_recent limit rate over 15/minute drop
         add @lgsm_recent { ip saddr }
@@ -49,10 +47,9 @@ table inet filter {
         tcp dport $ssh_port ct state new accept
 
         # GAME SERVERS UDP
-        udp dport $games_ports ct state new,established accept
-
-        # Brute-force tracking
         udp dport $games_ports ct state new jump lgsm_bruteforce
+        udp dport $games_ports ct state new accept
+        udp dport $games_ports ct state established accept
 
         # TCP scan protection
         tcp flags & (fin|syn|rst|psh|ack|urg) == 0 drop
@@ -87,7 +84,6 @@ table inet filter {
         } accept
 
         ip6 nexthdr ipv6-icmp drop
-
     }
 
     chain output {

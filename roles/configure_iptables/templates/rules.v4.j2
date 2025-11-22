@@ -20,9 +20,9 @@
 
 # UDP Game servers
 {% for port in game_ports_list %}
+-A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 --name DEFAULT --rsource -j DROP
+-A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW -m recent --set --name DEFAULT --rsource
 -A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
--A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW -m recent --set --name LGSM_RATE_{{ port }} --rsource
--A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 15 --name LGSM_RATE_{{ port }} --rsource -j DROP
 {% endfor %}
 
 # TCP scan protection
