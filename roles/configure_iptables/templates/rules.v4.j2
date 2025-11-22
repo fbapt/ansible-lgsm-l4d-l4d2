@@ -18,16 +18,11 @@
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 30 --name SSH --rsource -j DROP
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -j ACCEPT
 
-# UDP Game servers - rate-limit type LinuxGSM (recent)
+# UDP Game servers
 {% for port in game_ports_list %}
--A INPUT -p udp --dport {{ port }} -m state --state NEW -m recent --set --name LGSM_RATE_{{ port }} --rsource
--A INPUT -p udp --dport {{ port }} -m state --state NEW -m recent --update --seconds 60 --hitcount 15 --name LGSM_RATE_{{ port }} --rsource -j DROP
-{% endfor %}
-
-# UDP Game servers - limitation par IP source + port (hashlimit)
-{% for port in game_ports_list %}
--A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW,ESTABLISHED -m hashlimit --hashlimit 80/second --hashlimit-burst 150 --hashlimit-mode srcip,dstport --hashlimit-name udp_{{ port }} -j ACCEPT
 -A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+-A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW -m recent --set --name LGSM_RATE_{{ port }} --rsource
+-A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 15 --name LGSM_RATE_{{ port }} --rsource -j DROP
 {% endfor %}
 
 # TCP scan protection
@@ -37,7 +32,7 @@
 -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
 
 # SYN flood protection
--A INPUT -p tcp --syn -m hashlimit --hashlimit-name syn_flood --hashlimit 50/second --hashlimit-burst 200 --hashlimit-mode srcip -j ACCEPT
+-A INPUT -p tcp --syn -m limit --limit 50/second --limit-burst 200 -j ACCEPT
 -A INPUT -p tcp --syn -j DROP
 
 # ICMP minimal safe

@@ -22,7 +22,6 @@ table inet filter {
     chain ssh_bruteforce {
         ip saddr @ssh_recent limit rate over 30/minute drop
         add @ssh_recent { ip saddr }
-        
         return
     }
 
@@ -50,11 +49,10 @@ table inet filter {
         tcp dport $ssh_port ct state new accept
 
         # GAME SERVERS UDP
-        udp dport $games_ports ct state new jump lgsm_bruteforce
-
-        # UDP GAME SERVERS hashlimit
-        udp dport $games_ports ct state new,established limit rate 80/second burst 150 packets accept
         udp dport $games_ports ct state new,established accept
+
+        # Brute-force tracking
+        udp dport $games_ports ct state new jump lgsm_bruteforce
 
         # TCP scan protection
         tcp flags & (fin|syn|rst|psh|ack|urg) == 0 drop
