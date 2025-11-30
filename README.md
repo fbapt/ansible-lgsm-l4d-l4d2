@@ -3,7 +3,7 @@
 > ⚠️ You need to have some experience with Ansible, Left 4 Dead games and linuxgsm
 > before using this repo!
 
-This repository use ansible to deployed and installed left4dead 1 or left4dead 2 dedicated servers with linuxgsm on Debian 13
+This repository uses Ansible to deploy and install dedicated Left 4 Dead 1 or 2 servers with LinuxGSM on Debian 13.
 
 # Example of a basic Ansible configuration
 
