@@ -1,8 +1,8 @@
-deb {{ lgsmrequirements_url_deb }} {{ ansible_distribution_release }} main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
-deb-src {{ lgsmrequirements_url_deb }} {{ ansible_distribution_release }} main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
+deb {{ lgsmrequirements_url_deb }} {{ ansible_facts['distribution_release'] }} main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
+deb-src {{ lgsmrequirements_url_deb }} {{ ansible_facts['distribution_release'] }} main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
 
-deb {{ lgsmrequirements_url_deb_secu }} {{ ansible_distribution_release }}-security main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
-deb-src {{ lgsmrequirements_url_deb_secu }} {{ ansible_distribution_release }}-security main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
+deb {{ lgsmrequirements_url_deb_secu }} {{ ansible_facts['distribution_release'] }}-security main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
+deb-src {{ lgsmrequirements_url_deb_secu }} {{ ansible_facts['distribution_release'] }}-security main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
 
-deb {{ lgsmrequirements_url_deb }} {{ ansible_distribution_release }}-updates main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
-deb-src {{ lgsmrequirements_url_deb }} {{ ansible_distribution_release }}-updates main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
+deb {{ lgsmrequirements_url_deb }} {{ ansible_facts['distribution_release'] }}-updates main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}
+deb-src {{ lgsmrequirements_url_deb }} {{ ansible_facts['distribution_release'] }}-updates main {{ lgsmrequirements_contrib }} {{ lgsmrequirements_nonfree }} {{ lgsmrequirements_nonfreefirmware }}

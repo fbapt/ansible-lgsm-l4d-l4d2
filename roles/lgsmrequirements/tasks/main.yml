@@ -1,7 +1,7 @@
 ---
 - name: Load OS specific variables
   ansible.builtin.include_vars:
-    file: "defaults/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+    file: "defaults/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
 
 - name: Add contrib non free debian repository
   ansible.builtin.template:
