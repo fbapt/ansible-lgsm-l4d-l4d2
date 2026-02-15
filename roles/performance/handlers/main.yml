@@ -1,5 +1,5 @@
 ---
 - name: Update-grub
   ansible.builtin.command: update-grub
-  register: checkupdate
-  changed_when: checkupdate.rc != 0
+  register: performance_checkupdate
+  changed_when: performance_checkupdate.rc != 0
