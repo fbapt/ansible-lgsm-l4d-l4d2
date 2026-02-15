@@ -41,7 +41,7 @@
 
     - name: Copy ssh audit hardening
       ansible.builtin.copy:
-        src: "{{ ansible_distribution }}{{ ansible_distribution_major_version }}/ssh-audit_hardening.conf"
+        src: "{{ ansible_facts['distribution'] }}{{ ansible_facts['distribution_major_version'] }}/ssh-audit_hardening.conf"
         dest: /etc/ssh/sshd_config.d/ssh-audit_hardening.conf
         owner: root
         group: root
