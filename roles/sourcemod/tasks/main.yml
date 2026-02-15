@@ -1,7 +1,7 @@
 ---
 - name: Check the latest version of Sourcemod
   ansible.builtin.uri:
-    url: "{{ sourcemod_url }}/{{ sourcemod_branch }}/sourcemod-latest-linux"
+    url: "https://{{ sourcemod_url }}/{{ sourcemod_branch }}/sourcemod-latest-linux"
     return_content: true
   register: sourcemod_filename
   changed_when: false
@@ -22,7 +22,7 @@
   block:
     - name: Download the latest version
       ansible.builtin.get_url:
-        url: "{{ sourcemod_url }}/{{ sourcemod_branch }}/{{ sourcemod_filename.content }}"
+        url: "https://{{ sourcemod_url }}/{{ sourcemod_branch }}/{{ sourcemod_filename.content }}"
         dest: "/home/{{ item.0.user }}"
         mode: "0755"
         owner: "{{ item.0.user }}"
@@ -61,6 +61,11 @@
       loop: "{{ lgsm | zip(sourcemod_source_current.results) | list }}"
       loop_control:
         label: "dest: /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/sourcemod/VERSION"
+
+  rescue:
+    - name: Fail Sourcemod installation safely
+      ansible.builtin.fail:
+        msg: Sourcemod installation failed — partial deployment prevented.
 
 - name: Include task Configure admins
   ansible.builtin.import_tasks: admins.yml

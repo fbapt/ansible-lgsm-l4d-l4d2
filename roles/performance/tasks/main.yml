@@ -23,8 +23,8 @@
 - name: Update gai conf to set priority ipv4 over ipv6
   ansible.builtin.replace:
     path: /etc/gai.conf
-    regexp: '#precedence ::ffff:0:0/96  100'
-    replace: 'precedence ::ffff:0:0/96  100'
+    regexp: "#precedence ::ffff:0:0/96  100"
+    replace: precedence ::ffff:0:0/96  100
 
 - name: Tuned-adm profile network-latency
   ansible.builtin.command:
@@ -73,6 +73,6 @@
     name: Disable hyperthreading
     user: root
     special_time: reboot
-    job: "sleep 30 && echo d | /root/toggleHT.sh"
+    job: sleep 30 && echo d | /root/toggleHT.sh
     state: present
   when: performance_physical.stdout == ""

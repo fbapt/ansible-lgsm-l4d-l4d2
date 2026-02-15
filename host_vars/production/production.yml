@@ -1,8 +1,8 @@
 ---
 lgsm:
-  - user: "l4dserver"
-    game_name: "l4dserver"
-    directory: "left4dead"
+  - user: l4dserver
+    game_name: l4dserver
+    directory: left4dead
     password: "{{ l4dserver_password }}"
     ssh-keys:
       - type: ssh-rsa
@@ -28,34 +28,34 @@ lgsm:
     stripper_cfg: true
     maps: true
     crontab_reboot:
-      - name: "l4dserver_reboot_monitor"
-        command: "monitor"
+      - name: l4dserver_reboot_monitor
+        command: monitor
         sleep: "40"
     crontab:
-      - name: "l4dserver_update"
+      - name: l4dserver_update
         minute: "*/30"
         hour: "*"
         day: "*"
         month: "*"
         weekday: "*"
-        command: "update"
-      - name: "l4dserver_update-lgsm"
+        command: update
+      - name: l4dserver_update-lgsm
         minute: "0"
         hour: "0"
         day: "*"
         month: "*"
         weekday: "0"
-        command: "update-lgsm"
-      - name: "l4dserver_restart-everyday"
+        command: update-lgsm
+      - name: l4dserver_restart-everyday
         minute: "0"
         hour: "4"
         day: "*"
         month: "*"
         weekday: "*"
-        command: "restart"
-  - user: "l4d2server"
-    game_name: "l4d2server"
-    directory: "left4dead2"
+        command: restart
+  - user: l4d2server
+    game_name: l4d2server
+    directory: left4dead2
     password: "{{ l4d2server_password }}"
     ssh-keys:
       - type: ssh-rsa
@@ -81,36 +81,36 @@ lgsm:
     maps: true
     serverfiles: true
     crontab_reboot:
-      - name: "l4d2server_reboot_monitor"
-        command: "monitor"
+      - name: l4d2server_reboot_monitor
+        command: monitor
         sleep: "45"
     crontab:
-      - name: "l4d2server_update"
-        minute: "5,35"
+      - name: l4d2server_update
+        minute: 5,35
         hour: "*"
         day: "*"
         month: "*"
         weekday: "*"
-        command: "update"
-      - name: "l4d2server_update-lgsm"
+        command: update
+      - name: l4d2server_update-lgsm
         minute: "5"
         hour: "0"
         day: "*"
         month: "*"
         weekday: "0"
-        command: "update-lgsm"
-      - name: "l4d2server_restart-everyday"
+        command: update-lgsm
+      - name: l4d2server_restart-everyday
         minute: "5"
         hour: "4"
         day: "*"
         month: "*"
         weekday: "*"
-        command: "restart"
+        command: restart
 
 lgsmuser_steamcmd_locales_secondary: fr_FR.UTF-8 UTF-8
 
 configure_ssh_port: 5976
 configure_iptables_games_servers_ports: 27015,27016
 configure_iptables_ssh_port: "{{ configure_ssh_port }}"
-configure_nftables_games_servers_ports: "27015, 27016"
+configure_nftables_games_servers_ports: 27015, 27016
 configure_nftables_ssh_port: "{{ configure_ssh_port }}"

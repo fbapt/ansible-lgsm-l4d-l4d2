@@ -15,7 +15,7 @@
   block:
     - name: Download the requested version
       ansible.builtin.get_url:
-        url: "{{ strippersource_url }}/{{ strippersource_filename }}"
+        url: "http://{{ strippersource_url }}/{{ strippersource_filename }}"
         dest: "/home/{{ item.0.user }}"
         mode: "0755"
         owner: "{{ item.0.user }}"
@@ -54,6 +54,18 @@
       loop: "{{ lgsm | zip(strippersource_current.results) | list }}"
       loop_control:
         label: "dest: /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/stripper/VERSION"
+
+  rescue:
+    - name: Fail Stripper Source installation safely
+      ansible.builtin.fail:
+        msg: Stripper Source installation failed — partial deployment prevented.
+
+  always:
+    - name: Ensure archive cleanup
+      ansible.builtin.file:
+        path: "/home/{{ item.0.user }}/{{ strippersource_filename }}"
+        state: absent
+      loop: "{{ lgsm | zip(strippersource_current.results) | list }}"
 
 - name: Include tasks copy stripper cfg files
   ansible.builtin.import_tasks: stripper_cfg.yml

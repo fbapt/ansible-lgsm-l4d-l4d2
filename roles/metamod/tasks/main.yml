@@ -1,7 +1,7 @@
 ---
 - name: Get filename of latest version of Metamod Source
   ansible.builtin.uri:
-    url: "{{ metamod_url }}/{{ metamod_branch }}/mmsource-latest-linux"
+    url: "https://{{ metamod_url }}/{{ metamod_branch }}/mmsource-latest-linux"
     return_content: true
   register: metamod_source_filename
   changed_when: false
@@ -22,7 +22,7 @@
   block:
     - name: Download the latest version
       ansible.builtin.get_url:
-        url: "{{ metamod_url }}/{{ metamod_branch }}/{{ metamod_source_filename.content }}"
+        url: "https://{{ metamod_url }}/{{ metamod_branch }}/{{ metamod_source_filename.content }}"
         dest: "/home/{{ item.0.user }}"
         mode: "0755"
         owner: "{{ item.0.user }}"
@@ -61,6 +61,11 @@
       loop: "{{ lgsm | zip(metamod_source_current.results) | list }}"
       loop_control:
         label: "dest: /home/{{ item.0.user }}/serverfiles/{{ item.0.directory }}/addons/metamod/VERSION"
+
+  rescue:
+    - name: Fail Metamod installation safely
+      ansible.builtin.fail:
+        msg: Metamod Source installation failed — partial deployment prevented.
 
 - name: Remove metamod_x64.vdf
   ansible.builtin.file:

@@ -3,8 +3,10 @@
   hosts: lgsmhosts
   become: true
   roles:
-    - { role: configure_ssh, tags: configure_ssh }
-    - { role: configure_iptables, tags: configure_iptables }
+    - role: configure_ssh
+      tags: configure_ssh
+    - role: configure_iptables
+      tags: configure_iptables
   handlers:
     - name: Restart ssh iptables or nftables
       ansible.builtin.shell: systemctl restart ssh iptables

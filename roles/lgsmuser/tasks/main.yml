@@ -61,7 +61,7 @@
   ansible.builtin.lineinfile:
     dest: /home/{{ item.user }}/.profile
     state: present
-    line: "export LANG=en_US.UTF-8"
+    line: export LANG=en_US.UTF-8
     mode: "0644"
   loop: "{{ lgsm }}"
   loop_control:

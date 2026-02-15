@@ -26,14 +26,14 @@
   ansible.builtin.debconf:
     name: steamcmd
     question: steam/question
-    value: 'I AGREE'
+    value: I AGREE
     vtype: select
 
 - name: Accept steam license
   ansible.builtin.debconf:
     name: steamcmd
     question: steam/license
-    value: ''
+    value: ""
     vtype: note
 
 - name: Install lgsm dependencies

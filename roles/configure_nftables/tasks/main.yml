@@ -13,7 +13,6 @@
 - name: Remove dependencies that are no longer required
   ansible.builtin.apt:
     autoremove: true
-    force: true
 
 - name: Installation
   ansible.builtin.package:
@@ -31,6 +30,11 @@
         owner: root
         group: root
         mode: "0644"
+
+  rescue:
+    - name: Fail if nftables configuration generation fails
+      ansible.builtin.fail:
+        msg: nftables configuration generation failed — firewall state unchanged.
 
 - name: Enable nftables
   ansible.builtin.systemd:

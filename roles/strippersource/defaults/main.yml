@@ -1,4 +1,4 @@
 ---
-strippersource_url: http://www.bailopan.net/stripper/snapshots/1.2
-strippersource_version: "1.2.2-git141"
+strippersource_url: www.bailopan.net/stripper/snapshots/1.2
+strippersource_version: 1.2.2-git141
 strippersource_filename: "stripper-{{ strippersource_version }}-linux.tar.gz"

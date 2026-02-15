@@ -3,4 +3,5 @@
   hosts: lgsmhosts
   become: true
   roles:
-    - { role: performance, tags: performance }
+    - role: performance
+      tags: performance

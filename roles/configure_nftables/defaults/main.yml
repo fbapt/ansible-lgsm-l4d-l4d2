@@ -4,4 +4,4 @@ configure_nftables_iptables_dependencies:
   - iptables-persistent
 
 configure_nftables_ssh_port: 22
-configure_nftables_games_servers_ports: "27015, 27016"
+configure_nftables_games_servers_ports: 27015, 27016

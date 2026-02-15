@@ -28,7 +28,7 @@
         ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
         touch /etc/ssh/ansibleregeneratekeys
       args:
-        creates: "/etc/ssh/ansibleregeneratekeys"
+        creates: /etc/ssh/ansibleregeneratekeys
         executable: /usr/bin/bash
 
     - name: Remove small Diffie-Hellman moduli
@@ -36,7 +36,7 @@
         awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.safe
         cp -p /etc/ssh/moduli.safe /etc/ssh/moduli
       args:
-        creates: "/etc/ssh/moduli.safe"
+        creates: /etc/ssh/moduli.safe
         executable: /usr/bin/bash
 
     - name: Copy ssh audit hardening
@@ -46,6 +46,16 @@
         owner: root
         group: root
         mode: "0644"
+
+  rescue:
+    - name: Fail explicitly if SSH hardening block fails
+      ansible.builtin.fail:
+        msg: SSH hardening failed — aborting to avoid locking out access.
+
+  always:
+    - name: Log SSH block completion
+      ansible.builtin.debug:
+        msg: SSH hardening block completed (success or failure).
 
 - name: Enable ssh
   ansible.builtin.systemd:
