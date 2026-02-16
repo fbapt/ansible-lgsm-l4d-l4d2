@@ -2,11 +2,12 @@
 - name: Create lgsm user
   ansible.builtin.user:
     name: "{{ item.user }}"
-    password: "{{ item.password | password_hash('sha512', 'mysecretsalt', rounds=656000) }}"
+    password: "{{ item.password | password_hash('sha512') }}"
     shell: /usr/bin/bash
   loop: "{{ lgsm }}"
+  no_log: true
   loop_control:
-    label: "user: {{ item.user }} password: {{ item.password | password_hash('sha512', 'mysecretsalt', rounds=656000) }}"
+    label: "user: {{ item.user }}"
 
 - name: Add or modify user limits for steamcmd
   community.general.pam_limits:
