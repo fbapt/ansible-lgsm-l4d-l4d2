@@ -40,29 +40,29 @@ lgsm:
         weekday: "*"
         command: update
       - name: l4dserver_update-lgsm
-        minute: "0"
-        hour: "0"
+        minute: 10
+        hour: 0
         day: "*"
         month: "*"
-        weekday: "0"
+        weekday: 0
         command: update-lgsm
       - name: l4dserver_stop-everyday
-        minute: "55"
-        hour: "3"
+        minute: 55
+        hour: 3
         day: "*"
         month: "*"
         weekday: "*"
         command: stop
       - name: l4dserver_force-update-everyday
-        minute: "56"
-        hour: "3"
+        minute: 56
+        hour: 3
         day: "*"
         month: "*"
         weekday: "*"
         command: force-update
       - name: l4dserver_start-everyday
-        minute: "57"
-        hour: "3"
+        minute: 57
+        hour: 3
         day: "*"
         month: "*"
         weekday: "*"
@@ -107,29 +107,29 @@ lgsm:
         weekday: "*"
         command: update
       - name: l4d2server_update-lgsm
-        minute: "5"
-        hour: "0"
+        minute: 15
+        hour: 0
         day: "*"
         month: "*"
-        weekday: "0"
+        weekday: 0
         command: update-lgsm
       - name: l4d2server_stop-everyday
-        minute: "1"
-        hour: "4"
+        minute: 0
+        hour: 4
         day: "*"
         month: "*"
         weekday: "*"
         command: stop
       - name: l4d2server_force-update-everyday
-        minute: "2"
-        hour: "4"
+        minute: 1
+        hour: 4
         day: "*"
         month: "*"
         weekday: "*"
         command: force-update
       - name: l4d2server_start-everyday
-        minute: "3"
-        hour: "4"
+        minute: 2
+        hour: 4
         day: "*"
         month: "*"
         weekday: "*"
