@@ -45,7 +45,7 @@ pip install ansible ansible-core ansible-lint passlib
 
 ### Generate SSH key (as ansible user)
 
-**RSA 4096** or **ED25519**
+**ED25519**
 
 ``` bash
 ssh-keygen -o -a 256 -t ed25519 -C "${USER}@${HOSTNAME}" -f ~/.ssh/id_ed25519_ansible -N ""
@@ -96,7 +96,7 @@ As **ansible** user, copy SSH key to each node :
 ``` bash
 nodeip=x.x.x.x
 nodeuser=ansible
-sshtype=ed25519 or rsa
+sshtype=ed25519
 ssh-copy-id -i ~/.ssh/id_"${sshtype}"_ansible.pub "${nodeuser}@${nodeip}"
 ```
 
@@ -138,19 +138,19 @@ nano .vault_pass
 
 ### Add L4D1/2 configuration files into roles
 
-#### role/lgsminstallation/files/l4d\[2\]server/lgsm_cfg
+#### role/lgsminstallation/files/l4d[2]server/lgsm_cfg
 
 → `l4dserver.cfg`
 
-#### role/lgsminstallation/files/l4d\[2\]server/server
+#### role/lgsminstallation/files/l4d[2]server/server
 
 → `host.txt`, `mymotd.txt`
 
-#### role/lgsminstallation/files/l4d\[2\]server/server_cfg
+#### role/lgsminstallation/files/l4d[2]server/server_cfg
 
 → `server.cfg`, `l4dserver.cfg`
 
-#### role/maps/files/l4d\[2\]server/maps
+#### role/maps/files/l4d[2]server/maps
 
 → Non-workshop maps
 
@@ -158,15 +158,15 @@ nano .vault_pass
 
 → Workshop maps (L4D2 only)
 
-#### role/metamod/files/l4d\[2\]server/metamod_plugins
+#### role/metamod/files/l4d[2]server/metamod_plugins
 
 → Metamod plugin files
 
-#### role/sourcemod/files/l4d\[2\]server/sourcemod_plugins
+#### role/sourcemod/files/l4d[2]server/sourcemod_plugins
 
 → addons + cfg/sourcemod
 
-#### role/strippersource/files/l4d\[2\]server/stripper_cfg
+#### role/strippersource/files/l4d[2]server/stripper_cfg
 
 → dumps + maps configs
 
@@ -186,32 +186,7 @@ ansible-playbook lgsm.yml --limit production
 > ⚠️ You must create each user SSH key (`l4d1`, `l4d2`) on your server
 > and download it on your computer.
 
-**On Windows :**
-
-Use **PuTTYgen + Pageant**.
-
-Enable :
-
--   "Use proven primes with even distribution (slowest)"
--   "Use 'strong' primes as RSA key factors"
-
-![alt text](image.png)
-
-Generate **RSA 4096** or **EdDSA** recommended.\
-Add a **passphrase (min 16 characters)**.
-
-Save private key.
-Load into Pageant → *Add key*.
-
-Copy/paste the public key into
-
-    ssh-keys:
-	  - type: ssh-ed25519
-		key: <HERE>
-
-**On Linux:**
-
-Generate **RSA 4096** or **EdDSA** recommended.\
+Generate **ed25519**\
 Add a **passphrase (min 16 characters)**.
 ``` bash
 ssh-keygen -o -a 256 -t ed25519 -C "${USER}@${HOSTNAME}" -f ~/.ssh/id_ed25519_l4d[2]
@@ -248,6 +223,8 @@ Playbooks tested with packages :
 -   ansible community
 -   ansible-core
 -   ansible-lint
+-   checkov
+-   kicks
 
 Tested on **Debian 13**
 
