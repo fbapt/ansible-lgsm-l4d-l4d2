@@ -224,7 +224,7 @@ Playbooks tested with packages :
 -   ansible-core
 -   ansible-lint
 -   checkov
--   kicks
+-   kics
 
 Tested on **Debian 13**
 
