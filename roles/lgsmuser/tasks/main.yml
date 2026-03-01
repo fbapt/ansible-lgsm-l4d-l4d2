@@ -24,28 +24,6 @@
       value: {{ lgsmuser_limit_value }}
       comment: fix openfiles for steamcmd"
 
-- name: Add ld library path in user .profile to fix ldd shared library not found for l4d games
-  ansible.builtin.lineinfile:
-    dest: /home/{{ item.user }}/.profile
-    state: present
-    line: "{{ item.ld_library_path }}"
-    mode: "0644"
-  loop: "{{ lgsm }}"
-  loop_control:
-    label: "dest: /home/{{ item.user }}/.profile line: {{ item.ld_library_path }}"
-  when: not ansible_check_mode
-
-- name: Add rdtsc_frequency to disabled benchmark for l4d1 in user .profile
-  ansible.builtin.lineinfile:
-    dest: /home/{{ item.user }}/.profile
-    state: present
-    line: "{{ item.rdtsc_frequency }}"
-    mode: "0644"
-  loop: "{{ lgsm }}"
-  loop_control:
-    label: "dest: /home/{{ item.user }}/.profile line: {{ item.rdtsc_frequency }}"
-  when: not ansible_check_mode
-
 - name: Set locale for steamcmd
   community.general.locale_gen:
     name: en_US.UTF-8
@@ -57,14 +35,3 @@
     question: locales/locales_to_be_generated
     value: "en_US.UTF-8 UTF-8, {{ lgsmuser_steamcmd_locales_secondary }}"
     vtype: multiselect
-
-- name: Add lang us utf8 in user .profile for steamcmd
-  ansible.builtin.lineinfile:
-    dest: /home/{{ item.user }}/.profile
-    state: present
-    line: export LANG=en_US.UTF-8
-    mode: "0644"
-  loop: "{{ lgsm }}"
-  loop_control:
-    label: "dest: /home/{{ item.user }}/.profile line: export LANG=en_US.UTF-8"
-  when: not ansible_check_mode

@@ -11,8 +11,6 @@ lgsm:
               rMn+P4iLSa3RfxL29CGW7o2RNv/YBybzavzKp+XT4Kyup6MLx/qe/9XdwXBhG7/WaByyCDED+9AJMtlpSRo3+DZsgGhA2mOmo++TlW+UNopz6GFMUc/VdGo\
               5CFtOzQbbigesTkR4P"
         comment: l4dserver@LGSM-Debian
-    ld_library_path: export LD_LIBRARY_PATH=~/.steam/steamcmd/linux32/:~/serverfiles/bin/
-    rdtsc_frequency: export RDTSC_FREQUENCY=disabled
     sourcemod_admins:
       - name: player1
         identity: STEAM_0:0:xxxxxxxxx
@@ -85,8 +83,6 @@ lgsm:
               Q7EAW2bH7NDnHB/iBSNEbjXvKUQscZ56NVE3onRzaBL0wbboKH3/nRqU/bGhJt3mQKvWolh0LqfjzzGTadQ4YglfivKfD5/FaaBqQj0Oz4syWwIwQI\
               F7sBi0jB6R9jes9/uDcoe7+E5u3QqfHd"
         comment: l4d2server@LGSM-Debian
-    ld_library_path: export LD_LIBRARY_PATH=~/.steam/steamcmd/linux32/:~/serverfiles/bin/
-    rdtsc_frequency: ""
     sourcemod_admins:
       - name: player1
         identity: STEAM_0:0:xxxxxxxxx
