@@ -30,13 +30,20 @@ lgsm:
         command: monitor
         sleep: "40"
     crontab:
-      - name: l4dserver_force-restart-with-update-everyday
+      - name: l4dserver_update
+        minute: 50
+        hour: 3
+        day: "*"
+        month: "*"
+        weekday: "*"
+        command: update
+      - name: l4dserver_restart
         minute: 52
         hour: 3
         day: "*"
         month: "*"
         weekday: "*"
-        command: force-update
+        command: restart
       - name: l4dserver_update-lgsm
         minute: 10
         hour: 0
@@ -81,13 +88,20 @@ lgsm:
         command: monitor
         sleep: "45"
     crontab:
-      - name: l4d2server_force-restart-with-update-everyday
+      - name: l4d2server_update
+        minute: 10
+        hour: 4
+        day: "*"
+        month: "*"
+        weekday: "*"
+        command: update
+      - name: l4d2server_restart
         minute: 12
         hour: 4
         day: "*"
         month: "*"
         weekday: "*"
-        command: force-update
+        command: restart
       - name: l4d2server_update-lgsm
         minute: 15
         hour: 0
