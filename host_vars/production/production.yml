@@ -30,13 +30,13 @@ lgsm:
         command: monitor
         sleep: "40"
     crontab:
-      - name: l4dserver_update
-        minute: "*/30"
-        hour: "*"
+      - name: l4dserver_force-restart-with-update-everyday
+        minute: 52
+        hour: 3
         day: "*"
         month: "*"
         weekday: "*"
-        command: update
+        command: force-update
       - name: l4dserver_update-lgsm
         minute: 10
         hour: 0
@@ -44,29 +44,8 @@ lgsm:
         month: "*"
         weekday: 0
         command: update-lgsm
-      - name: l4dserver_stop-everyday
-        minute: 55
-        hour: 3
-        day: "*"
-        month: "*"
-        weekday: "*"
-        command: stop
-      - name: l4dserver_force-update-everyday
-        minute: 56
-        hour: 3
-        day: "*"
-        month: "*"
-        weekday: "*"
-        command: force-update
-      - name: l4dserver_start-everyday
-        minute: 57
-        hour: 3
-        day: "*"
-        month: "*"
-        weekday: "*"
-        command: start
       - name: l4dserver_monitor-everyday
-        minute: "3,13,23,33,43,53"
+        minute: "*/15"
         hour: "*"
         day: "*"
         month: "*"
@@ -102,13 +81,13 @@ lgsm:
         command: monitor
         sleep: "45"
     crontab:
-      - name: l4d2server_update
-        minute: 6,36
-        hour: "*"
+      - name: l4d2server_force-restart-with-update-everyday
+        minute: 12
+        hour: 4
         day: "*"
         month: "*"
         weekday: "*"
-        command: update
+        command: force-update
       - name: l4d2server_update-lgsm
         minute: 15
         hour: 0
@@ -116,29 +95,8 @@ lgsm:
         month: "*"
         weekday: 0
         command: update-lgsm
-      - name: l4d2server_stop-everyday
-        minute: 0
-        hour: 4
-        day: "*"
-        month: "*"
-        weekday: "*"
-        command: stop
-      - name: l4d2server_force-update-everyday
-        minute: 1
-        hour: 4
-        day: "*"
-        month: "*"
-        weekday: "*"
-        command: force-update
-      - name: l4d2server_start-everyday
-        minute: 2
-        hour: 4
-        day: "*"
-        month: "*"
-        weekday: "*"
-        command: start
       - name: l4d2server_monitor-everyday
-        minute: "4,14,24,34,44,54"
+        minute: "*/15"
         hour: "*"
         day: "*"
         month: "*"
