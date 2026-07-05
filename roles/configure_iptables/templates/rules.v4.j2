@@ -13,28 +13,19 @@
 # Paquets invalides
 -A INPUT -m conntrack --ctstate INVALID -j DROP
 
-# SSH bruteforce protection
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --set --name SSH --rsource
--A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 30 --name SSH --rsource -j DROP
+# SSH
 -A INPUT -p tcp --dport {{ configure_iptables_ssh_port }} -m conntrack --ctstate NEW -j ACCEPT
 
 # UDP Game servers
 {% for port in game_ports_list %}
--A INPUT -p udp --dport {{ port }} -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+-A INPUT -p udp --dport {{ port }} -j ACCEPT
 {% endfor %}
 
-# TCP scan protection
--A INPUT -p tcp --tcp-flags ALL NONE -j DROP
--A INPUT -p tcp --tcp-flags ALL ALL -j DROP
--A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j DROP
--A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+# ICMP
+-A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+-A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
+-A INPUT -p icmp --icmp-type parameter-problem -j ACCEPT
 
-# SYN flood protection
--A INPUT -p tcp --syn -m limit --limit 50/second --limit-burst 200 -j ACCEPT
--A INPUT -p tcp --syn -j DROP
-
-# ICMP minimal safe
--A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/second -j ACCEPT
--A INPUT -p icmp --icmp-type echo-request -j DROP
+-A INPUT -p icmp --icmp-type echo-request -m limit --limit 5/second --limit-burst 10 -j ACCEPT
 
 COMMIT

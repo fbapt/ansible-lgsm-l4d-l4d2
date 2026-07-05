@@ -9,10 +9,11 @@
 # Connexions etablies ou liees
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# ICMPv6 minimal pour NDP et MTU
+# ICMPv6
 -A INPUT -p ipv6-icmp --icmpv6-type destination-unreachable -j ACCEPT
 -A INPUT -p ipv6-icmp --icmpv6-type packet-too-big -j ACCEPT
 -A INPUT -p ipv6-icmp --icmpv6-type time-exceeded -j ACCEPT
+
 -A INPUT -p ipv6-icmp --icmpv6-type neighbor-solicitation -j ACCEPT
 -A INPUT -p ipv6-icmp --icmpv6-type neighbor-advertisement -j ACCEPT
 -A INPUT -p ipv6-icmp --icmpv6-type router-solicitation -j ACCEPT

@@ -6,20 +6,9 @@ define games_ports = { {{ configure_nftables_games_servers_ports }} }
 
 table inet filter {
 
-    set ssh_recent {
-        type ipv4_addr
-        timeout 60s
-        flags timeout
-    }
-
-    chain ssh_bruteforce {
-        ip saddr @ssh_recent limit rate over 30/minute drop
-        add @ssh_recent { ip saddr }
-        return
-    }
-
     chain input {
-        type filter hook input priority 0; policy drop;
+        type filter hook input priority filter;
+        policy drop;
 
         # Loopback
         iif "lo" accept
@@ -30,53 +19,41 @@ table inet filter {
         # Paquets invalides
         ct state invalid drop
 
-        # SSH bruteforce protection
-        tcp dport $ssh_port ct state new jump ssh_bruteforce
-        tcp dport $ssh_port ct state new accept
+        # SSH
+        tcp dport $ssh_port ct state new counter accept
 
-        # GAME SERVERS UDP
-        udp dport $games_ports ct state new,established accept
+        # UDP Game servers
+        udp dport $games_ports counter accept
 
-        # TCP scan protection
-        tcp flags & (fin|syn|rst|psh|ack|urg) == 0 drop
-        tcp flags & (fin|psh|urg) == (fin|psh|urg) drop
-        tcp flags & (fin|syn|rst|psh|ack|urg) == (fin|syn|rst|psh|ack|urg) drop
-        tcp flags & (syn|rst) == (syn|rst) drop
-        tcp flags & (syn|fin) == (syn|fin) drop
-
-        # SYN flood protection
-        tcp flags syn limit rate 50/second burst 200 packets accept
-        tcp flags syn drop
-
-        # ICMP minimal safe
-        ip protocol icmp icmp type echo-request limit rate 1/second accept
-        ip protocol icmp icmp type echo-request drop
+        # ICMP
         ip protocol icmp icmp type {
             destination-unreachable,
             time-exceeded,
             parameter-problem
-        } accept
+        } counter accept
 
-        # IPv6
+        ip protocol icmp icmp type echo-request limit rate 5/second counter accept
+
+        # ICMPv6
         ip6 nexthdr ipv6-icmp icmpv6 type {
             destination-unreachable,
             packet-too-big,
             time-exceeded,
             parameter-problem,
-            nd-router-solicit,
-            nd-router-advert,
             nd-neighbor-solicit,
-            nd-neighbor-advert
-        } accept
-
-        ip6 nexthdr ipv6-icmp drop
-    }
-
-    chain output {
-        type filter hook output priority 0; policy accept;
+            nd-neighbor-advert,
+            nd-router-solicit,
+            nd-router-advert
+        } counter accept
     }
 
     chain forward {
-        type filter hook forward priority 0; policy drop;
+        type filter hook forward priority filter;
+        policy drop;
+    }
+
+    chain output {
+        type filter hook output priority filter;
+        policy accept;
     }
 }
